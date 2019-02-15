@@ -27,37 +27,58 @@ export function getTimeOrNumberFormatter(format) {
     : getNumberFormatter(format);
 }
 
-export function drawBarValues(svg, data, stacked, axisFormat) {
+export function drawBarValues(svg, chart, data, stacked, axisFormat) {
   const format = getNumberFormatter(axisFormat);
   const countSeriesDisplayed = data.length;
+
+  const countShowBar  = chart.state.disabled.filter(function(element) {
+    return (!element);
+  });
 
   const totalStackedValues = stacked && data.length !== 0 ?
     data[0].values.map(function (bar, iBar) {
       const bars = data.map(series => series.values[iBar]);
-      return d3.sum(bars, d => d.y);
+      return d3.sum(bars, function (d, idx) {
+        if (chart.state.disabled[idx] === false) return d.y;
+      });
     }) : [];
 
-  const groupLabels = svg.select('g.nv-barsWrap').append('g');
+    const rectsToBeLabeled = svg.selectAll('g.nv-group').filter(
+      function (d, i) {
+        if (!stacked) {
+          return true;
+        } else {
+          return i === countShowBar.length - 1;
+        }
+      }).selectAll('rect');
+  
+    const groupLabels = svg.select('g.nv-barsWrap').append('g');
+    rectsToBeLabeled.each(
+      function (d, index) {
+        const rectObj = d3.select(this);
+        if (rectObj.attr('class').includes('positive')) {
+          const transformAttr = rectObj.attr('transform');
+          const yPos = parseFloat(rectObj.attr('y'));
+          const xPos = parseFloat(rectObj.attr('x'));
+          const rectWidth = parseFloat(rectObj.attr('width'));
+          const t = groupLabels.append('text')
+            .attr('x', xPos) // rough position first, fine tune later
+            .attr('y', yPos - 5)
+            .text(format(stacked ? totalStackedValues[index] : d.y))
+            .attr('transform', transformAttr)
+            .attr('class', 'bar-chart-label')
+            .style("opacity", 0);
+          const labelWidth = t.node().getBBox().width;
+          t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune
+        }
+      });
+}
 
-  svg.selectAll('g.nv-group')
-    .filter((d, i) => !stacked || i === countSeriesDisplayed - 1)
-    .selectAll('rect')
-    .each(function (d, index) {
-      const rectObj = d3.select(this);
-      if (rectObj.attr('class').includes('positive')) {
-        const transformAttr = rectObj.attr('transform');
-        const yPos = parseFloat(rectObj.attr('y'));
-        const xPos = parseFloat(rectObj.attr('x'));
-        const rectWidth = parseFloat(rectObj.attr('width'));
-        const textEls = groupLabels.append('text')
-          .attr('y', yPos - 5)
-          .text(format(stacked ? totalStackedValues[index] : d.y))
-          .attr('transform', transformAttr)
-          .attr('class', 'bar-chart-label');
-        const labelWidth = textEls.node().getBBox().width;
-        textEls.attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune
-      }
-    });
+export function RemoveTotalBarValues (svg) {
+  let current = svg.select('g.nv-barsWrap').selectAll('text.bar-chart-label');
+  if (!current.empty()) {
+    current.transition().duration(300).attr("y", 0).style("opacity", 0).remove();
+  }
 }
 
 // Custom sorted tooltip

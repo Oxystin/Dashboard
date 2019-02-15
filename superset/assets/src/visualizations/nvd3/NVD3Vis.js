@@ -16,6 +16,7 @@ import {
   cleanColorInput,
   computeBarChartWidth,
   drawBarValues,
+  RemoveTotalBarValues,
   generateBubbleTooltipContent,
   generateMultiLineTooltipContent,
   generateRichLineTooltipContent,
@@ -44,7 +45,7 @@ const { getColor, getScale } = CategoricalColorNamespace;
 
 // Limit on how large axes margins can grow as the chart window is resized
 const MAX_MARGIN_PAD = 30;
-const ANIMATION_TIME = 1000;
+const ANIMATION_TIME = 300;
 const MIN_HEIGHT_FOR_BRUSH = 480;
 
 const BREAKPOINTS = {
@@ -297,7 +298,8 @@ function nvd3Vis(element, props) {
       case 'bar':
         chart = nv.models.multiBarChart()
           .showControls(showControls)
-          .groupSpacing(0.1);
+          .groupSpacing(0.1)
+          .duration(ANIMATION_TIME);
 
         if (!reduceXTicks) {
           width = computeBarChartWidth(data, isBarStacked, maxWidth);
@@ -305,10 +307,28 @@ function nvd3Vis(element, props) {
         chart.width(width);
         chart.xAxis.showMaxMin(false);
         chart.stacked(isBarStacked);
+        chart.state.stacked = isBarStacked;
+    
+        if (showBarValue) {
+          setTimeout(function () {
+            drawBarValues(svg, chart, data, isBarStacked, yAxisFormat);
+          }, ANIMATION_TIME+300);
+        }
+    
+        chart.dispatch.on('stateChange', function(e) {
+          if (showBarValue) {
+            RemoveTotalBarValues(svg);
+            setTimeout(function () {
+              drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
+            }, ANIMATION_TIME+300);
+          }
+        });
+
         break;
 
       case 'dist_bar':
         chart = nv.models.multiBarChart()
+          .duration(ANIMATION_TIME)
           .showControls(showControls)
           .reduceXTicks(reduceXTicks)
           .groupSpacing(0.1); // Distance between each group of bars.
@@ -325,6 +345,24 @@ function nvd3Vis(element, props) {
           width = computeBarChartWidth(data, isBarStacked, maxWidth);
         }
         chart.width(width);
+
+        chart.state.stacked = isBarStacked;
+    
+        if (showBarValue) {
+          setTimeout(function () {
+            drawBarValues(svg, chart, data, isBarStacked, yAxisFormat);
+          }, ANIMATION_TIME+300);
+        }
+    
+        chart.dispatch.on('stateChange', function(e) {
+          if (showBarValue) {
+            RemoveTotalBarValues(svg);
+            setTimeout(function () {
+              drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
+            }, ANIMATION_TIME+300);
+          }
+        });
+
         break;
 
       case 'pie':
@@ -411,12 +449,6 @@ function nvd3Vis(element, props) {
     }
     // Assuming the container has padding already other than for top margin
     chart.margin({ left: 0, right: 0, bottom: 0 });
-
-    if (showBarValue) {
-      setTimeout(function () {
-        drawBarValues(svg, data, isBarStacked, yAxisFormat);
-      }, ANIMATION_TIME);
-    }
 
     if (canShowBrush && onBrushEnd !== NOOP) {
       chart.focus.dispatch.on('brush', (event) => {
