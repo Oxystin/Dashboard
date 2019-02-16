@@ -8,5 +8,6 @@ export default function transformProps(chartProps) {
     data: payload.data,
     numberFormat: yAxisFormat,
     colorScheme,
+    chartId:formData.sliceId,
   };
 }

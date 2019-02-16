@@ -14,6 +14,7 @@ const propTypes = {
   height: PropTypes.number,
   numberFormat: PropTypes.string,
   colorScheme: PropTypes.string,
+  chartId: PropTypes.number.isRequired,
 };
 
 function Chord(element, props) {
@@ -23,6 +24,7 @@ function Chord(element, props) {
     height,
     numberFormat,
     colorScheme,
+    chartId,
   } = props;
 
   element.innerHTML = '';
@@ -76,7 +78,7 @@ function Chord(element, props) {
 
   // Add the group arc.
   const groupPath = group.append('path')
-    .attr('id', (d, i) => 'group' + i)
+    .attr('id', (d, i) => 'group' + chartId + 'arc' + i)
     .attr('d', arc)
     .style('fill', (d, i) => colorFn(nodes[i]));
 
@@ -86,7 +88,7 @@ function Chord(element, props) {
     .attr('dy', 15);
 
   groupText.append('textPath')
-    .attr('xlink:href', (d, i) => `#group${i}`)
+    .attr('xlink:href', (d, i) => `#group${chartId + 'arc' + i}`)
     .text((d, i) => nodes[i]);
   // Remove the labels that don't fit. :(
   groupText.filter(function (d, i) {
