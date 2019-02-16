@@ -160,6 +160,7 @@ class ChartRenderer extends React.PureComponent {
       chartAlert,
       chartStatus,
       vizType,
+      chartId,
     } = this.props;
 
     const isLoading = chartStatus === 'loading';
@@ -171,6 +172,7 @@ class ChartRenderer extends React.PureComponent {
       <React.Fragment>
         {this.renderTooltip()}
         <SuperChart
+          id={`chart-${chartId}`}
           className={`${snakeCase(vizType)}`}
           chartType={vizType}
           chartProps={skipChartRendering ? null : this.prepareChartProps()}

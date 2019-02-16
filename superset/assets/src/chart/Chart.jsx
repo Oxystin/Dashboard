@@ -71,6 +71,7 @@ class Chart extends React.PureComponent {
 
   render() {
     const {
+      chartId,
       width,
       height,
       chartAlert,
@@ -92,6 +93,7 @@ class Chart extends React.PureComponent {
     return (
       <ErrorBoundary onError={this.handleRenderContainerFailure} showMessage={false}>
         <div
+          id={`container-${chartId}`}
           className={`chart-container ${isLoading ? 'is-loading' : ''}`}
           style={containerStyles}
         >

@@ -123,6 +123,7 @@ class ResizableContainer extends React.PureComponent {
 
   render() {
     const {
+      id,
       children,
       adjustableWidth,
       adjustableHeight,
@@ -169,6 +170,7 @@ class ResizableContainer extends React.PureComponent {
 
     return (
       <Resizable
+        id={id}
         enable={enableConfig}
         grid={SNAP_TO_GRID}
         minWidth={
