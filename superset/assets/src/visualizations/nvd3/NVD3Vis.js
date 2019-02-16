@@ -477,6 +477,7 @@ function nvd3Vis(element, props) {
         chart.showLegend(false);
       } else {
         chart.showLegend(showLegend);
+        chart.legend.margin({top: 5, bottom: 30});
       }
     }
 
