@@ -241,6 +241,81 @@ function nvd3Vis(element, props) {
     return types.indexOf(vizType) >= 0;
   }
 
+  const AutoScaleNegativeBar = function (stacked) {
+    if (showBarValue) {
+
+        let yMin;
+        let yMax=0;
+        let MaxMin;
+
+        if (!stacked) {
+          if (chart.state.disabled) {
+            yMin = d3.min(data.map(function(array, i) {
+              if (!chart.state.disabled[i]){
+                return d3.min(array.values, d => (d.y < 0 ? d.y : 0));
+              } 
+            }));
+
+            if (yMin < 0) {
+              yMax = d3.max(data.map(function(array,i) {
+                if (!chart.state.disabled[i]){
+                  return d3.max(array.values, d => (d.y > 0 ? d.y : 0));
+                } 
+              }));
+            }
+          } else {
+            yMin = d3.min(data.map(function(array) {
+              return d3.min(array.values, d => (d.y));
+            }));
+
+            if (yMin < 0) {
+              yMax = d3.max(data.map(function(array) {
+                return d3.max(array.values, d => (d.y));
+              }));
+            }
+          }
+        } else {
+          if (chart.state.disabled) {
+            MaxMin = data[0].values.map(function (_, column_index) {
+              return data.map(series => series.values[column_index].y).reduce(function(prev, item, i) {
+                if (!chart.state.disabled[i]) {
+                  if (item < 0) {
+                    return [prev[0], item + prev[1]]
+                  } else {
+                    return [prev[0] + item, prev[1]]
+                  }
+                } else {
+                  return [prev[0],prev[1]]
+                }
+              },[0,0]);
+            });
+          } else {
+            MaxMin = data[0].values.map(function (_, column_index) {
+              return data.map(series => series.values[column_index].y).reduce(function(prev, item, i) {
+                if (item < 0) {
+                  return [prev[0], item + prev[1]]
+                } else {
+                  return [prev[0] + item, prev[1]]
+                }
+              },[0,0]);
+            });     
+          }
+          yMin = d3.min(MaxMin, d => d[1]);
+          yMax = d3.max(MaxMin, d => d[0]);
+        }
+
+        if (yMin<0) {
+          if (yMax === 0 ) {
+            chart.forceY([(yMin - yMax) * 0.1 + yMin,0]);
+          } else {
+            chart.forceY([(yMin - yMax) * 0.1 + yMin]);
+          }
+        } else if (yMin === 0) {
+          chart.forceY([0]);
+        }
+    }
+  }
+
   const drawGraph = function () {
     const d3Element = d3.select(element);
     let svg = d3Element.select('svg');
@@ -308,6 +383,8 @@ function nvd3Vis(element, props) {
         chart.xAxis.showMaxMin(false);
         chart.stacked(isBarStacked);
         chart.state.stacked = isBarStacked;
+
+        AutoScaleNegativeBar(isBarStacked);
     
         if (showBarValue) {
           setTimeout(function () {
@@ -317,6 +394,7 @@ function nvd3Vis(element, props) {
     
         chart.dispatch.on('stateChange', function(e) {
           if (showBarValue) {
+            AutoScaleNegativeBar(e.stacked);
             RemoveTotalBarValues(svg);
             setTimeout(function () {
               drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
@@ -347,6 +425,8 @@ function nvd3Vis(element, props) {
         chart.width(width);
 
         chart.state.stacked = isBarStacked;
+
+        AutoScaleNegativeBar(isBarStacked);
     
         if (showBarValue) {
           setTimeout(function () {
@@ -356,6 +436,7 @@ function nvd3Vis(element, props) {
     
         chart.dispatch.on('stateChange', function(e) {
           if (showBarValue) {
+            AutoScaleNegativeBar(e.stacked);
             RemoveTotalBarValues(svg);
             setTimeout(function () {
               drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
