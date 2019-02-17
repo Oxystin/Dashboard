@@ -35,12 +35,20 @@ export function drawBarValues(svg, chart, data, stacked, axisFormat) {
     return (!element);
   });
 
+  // Calculate Total Value totalStackedValues[positive, negative]
   const totalStackedValues = stacked && data.length !== 0 ?
-    data[0].values.map(function (bar, iBar) {
-      const bars = data.map(series => series.values[iBar]);
-      return d3.sum(bars, function (d, idx) {
-        if (chart.state.disabled[idx] === false) return d.y;
-      });
+    data[0].values.map(function (_, column_index) {
+      return data.map(series => series.values[column_index].y).reduce(function(prev, item, i) {
+        if (!chart.state.disabled[i]) {
+          if (item < 0) {
+            return [prev[0], item + prev[1]]
+          } else {
+            return [prev[0] + item, prev[1]]
+          }
+        } else {
+          return [prev[0],prev[1]]
+        }
+      },[0,0]);
     }) : [];
 
     const rectsToBeLabeled = svg.selectAll('g.nv-group').filter(
@@ -50,34 +58,77 @@ export function drawBarValues(svg, chart, data, stacked, axisFormat) {
         } else {
           return i === countShowBar.length - 1;
         }
-      }).selectAll('rect');
-  
+      }
+    ).selectAll('rect');
+
+    const yScale = chart.yAxis.scale()
+      .domain(chart.yAxis.scale().domain())
+      .range(chart.yAxis.scale().range());
+    
+    const dy_positive = 5;
+    const dy_negative = -dy_positive * 2.5;
+    
     const groupLabels = svg.select('g.nv-barsWrap').append('g');
-    rectsToBeLabeled.each(
-      function (d, index) {
-        const rectObj = d3.select(this);
-        if (rectObj.attr('class').includes('positive')) {
+
+    if (stacked) {
+      const PosNeg = [totalStackedValues.some(d => d[0] > 0), totalStackedValues.some(d => d[1] < 0)]
+      if (PosNeg[0] || PosNeg[1]) {
+        PosNeg.forEach(function(item, i) {
+          if (item) {
+            rectsToBeLabeled.each(
+              function (d, index) {
+                const y = totalStackedValues[index][i];
+                const dy = (y > 0) ? dy_positive : dy_negative;
+                const rectObj = d3.select(this);
+                const transformAttr = rectObj.attr('transform');
+                const yPos = yScale(y);
+                const xPos = parseFloat(rectObj.attr('x'));
+                const rectWidth = parseFloat(rectObj.attr('width'));
+                const t = groupLabels.append('text')
+                  .attr('x', xPos) // rough position first, fine tune later
+                  .attr('y', yPos - dy)
+                  .text(format(y))
+                  .attr('transform', transformAttr)
+                  .attr('class', 'bar-chart-label')
+                  .style("opacity", 0);
+                const labelWidth = t.node().getBBox().width;
+                t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
+              }
+            );
+          }       
+        });
+      }
+    } else {
+      rectsToBeLabeled.each(
+        function (d, index) {
+          const y = stacked ? totalStackedValues[index][0] : d.y
+          const dy = (y > 0) ? dy_positive : dy_negative;
+          const rectObj = d3.select(this);
           const transformAttr = rectObj.attr('transform');
-          const yPos = parseFloat(rectObj.attr('y'));
+          const yPos = yScale(y);
           const xPos = parseFloat(rectObj.attr('x'));
           const rectWidth = parseFloat(rectObj.attr('width'));
           const t = groupLabels.append('text')
             .attr('x', xPos) // rough position first, fine tune later
-            .attr('y', yPos - 5)
-            .text(format(stacked ? totalStackedValues[index] : d.y))
+            .attr('y', yPos - dy)
+            .text(format(y))
             .attr('transform', transformAttr)
             .attr('class', 'bar-chart-label')
             .style("opacity", 0);
           const labelWidth = t.node().getBBox().width;
-          t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune
+          t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
         }
-      });
+      );
+    }
 }
 
 export function RemoveTotalBarValues (svg) {
-  let current = svg.select('g.nv-barsWrap').selectAll('text.bar-chart-label');
+  let current = svg.select('g.nv-barsWrap').selectAll('g').filter (function (){
+    let ch = ($(this)[0].firstChild || false)
+    return (ch.classList || ch) ? ch.classList.contains('bar-chart-label') : false;
+  });
   if (!current.empty()) {
-    current.transition().duration(300).attr("y", 0).style("opacity", 0).remove();
+    current.remove();
   }
 }
 
