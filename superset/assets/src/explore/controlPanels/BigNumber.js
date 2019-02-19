@@ -15,15 +15,31 @@ export default {
       expanded: true,
       controlSetRows: [
         ['compare_lag', 'compare_suffix'],
-        ['y_axis_format', null],
-        ['show_trend_line', 'start_y_axis_at_zero'],
-        ['color_picker', null],
+        ['y_axis_format', 'date_time_format'],
+        ['show_trend_line', 'select_chart'],
+        ['start_y_axis_at_zero', 'show_perc'],
+        ['color_picker', 'fill_color_picker', 'fill_background'],
       ],
     },
   ],
   controlOverrides: {
     y_axis_format: {
       label: t('Number format'),
+    },
+    color_picker: {
+      label: t('Positive Value'),
+      description: t('Positive Value Color'),
+      default: {r: 29, g: 131, b: 72, a: 1},
+    },
+    fill_color_picker: {
+      label: t('Negative Value'),
+      description: t('Negative Value Color'),
+      default: {r: 203, g: 67, b: 53, a: 1},
+    },
+    show_perc: {
+      label: t('Show delta'),
+      description: t('Show delta value'),
+      default: false,
     },
   },
 };

@@ -1572,6 +1572,27 @@ export const controls = {
     description: t('Start y-axis at zero. Uncheck to start y-axis at minimum value in the data.'),
   },
 
+  fill_background: {
+    type: 'CheckboxControl',
+    label: t('Fill background'),
+    renderTrigger: true,
+    default: false,
+    description: t('Fill background widget'),
+  },
+
+  select_chart: {
+    type: 'SelectControl',
+    renderTrigger: true,
+    label: t('Select Chart'),
+    choices: [
+      ['area', 'area'],
+      ['bar', 'bar'],
+      ['line', 'line'],
+    ],
+    default: 'area',
+    description: t('Select Chart'),
+  },
+
   x_axis_showminmax: {
     type: 'CheckboxControl',
     label: t('X bounds'),
