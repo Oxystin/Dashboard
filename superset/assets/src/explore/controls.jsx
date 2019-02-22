@@ -1580,7 +1580,62 @@ export const controls = {
     description: t('Fill background widget'),
   },
 
+  scale_y: {
+    type: 'SelectControl',
+    renderTrigger: true,
+    label: t('Y Scale'),
+    choices: [
+      [1, '100%'],
+      [1.05, '105%'],
+      [1.1, '110%'],
+      [1.2, '120%'],
+      [1.3, '130%'],
+      [1.6, '160%'],
+      [2, '200%'],
+      [2.5, '250%'],
+      [3, '300%'],
+      [4, '400%'],
+      [5, '500%'],
+    ],
+    default: 1,
+    description: t('Scale Y Axis'),
+  },
+
+  scale_y_2: {
+    type: 'SelectControl',
+    renderTrigger: true,
+    label: t('Y Scale'),
+    choices: [
+      [1, '100%'],
+      [1.05, '105%'],
+      [1.1, '110%'],
+      [1.2, '120%'],
+      [1.3, '130%'],
+      [1.6, '160%'],
+      [2, '200%'],
+      [2.5, '250%'],
+      [3, '300%'],
+      [4, '400%'],
+      [5, '500%'],
+    ],
+    default: 1,
+    description: t('Scale Y Axis'),
+  },
+
   select_chart: {
+    type: 'SelectControl',
+    renderTrigger: true,
+    label: t('Select Chart'),
+    choices: [
+      ['area', 'area'],
+      ['bar', 'bar'],
+      ['line', 'line'],
+    ],
+    default: 'area',
+    description: t('Select Chart'),
+  },
+
+  select_chart_2: {
     type: 'SelectControl',
     renderTrigger: true,
     label: t('Select Chart'),

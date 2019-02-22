@@ -18,6 +18,7 @@ export default {
       expanded: true,
       controlSetRows: [
         ['metric', 'y_axis_format'],
+        ['select_chart', 'scale_y'],
       ],
     },
     {
@@ -25,6 +26,7 @@ export default {
       expanded: true,
       controlSetRows: [
         ['metric_2', 'y_axis_2_format'],
+        ['select_chart_2', 'scale_y_2'],
       ],
     },
     {
@@ -47,6 +49,12 @@ export default {
     x_axis_format: {
       choices: D3_TIME_FORMAT_OPTIONS,
       default: 'smart_date',
+    },
+    select_chart: {
+      default: 'bar',
+    },
+    select_chart_2: {
+      default: 'line',
     },
   },
 };

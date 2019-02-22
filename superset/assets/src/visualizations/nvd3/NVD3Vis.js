@@ -226,6 +226,10 @@ function nvd3Vis(element, props) {
     yAxisShowMinMax = false,
     yField,
     yIsLogScale,
+    selectChart,
+    selectChart2,
+    scaleY,
+    scaleY2,
   } = props;
 
   const isExplore = document.querySelector('#explorer-container') !== null;
@@ -240,6 +244,34 @@ function nvd3Vis(element, props) {
   function isVizTypes(types) {
     return types.indexOf(vizType) >= 0;
   }
+
+  const addDualAxisBarValue = function (svg, axisFormat) {
+	  const format = d3.format(axisFormat || '.3s');
+	  const countShowBar = 1;
+	
+	  const rectsToBeLabeled = svg.selectAll('g.nv-group').selectAll('rect');
+	
+	    const groupLabels = svg.select('g.bars1Wrap').append('g');
+	    rectsToBeLabeled.each(
+	      function (d) {
+          const rectObj = d3.select(this);
+	        if (rectObj.attr('class').includes('positive')) {
+	          const transformAttr = rectObj.attr('transform');
+	          const yPos = parseFloat(rectObj.attr('y'));
+	          const xPos = parseFloat(rectObj.attr('x'));
+	          const rectWidth = parseFloat(rectObj.attr('width'));
+	          const t = groupLabels.append('text')
+	            .attr('x', xPos) // rough position first, fine tune later
+	            .attr('y', yPos - 5)
+	            .text(format(d.y))
+	            .attr('transform', transformAttr)
+	            .attr('class', 'bar-chart-label')
+	            .style("opacity", 0);
+	          const labelWidth = t.node().getBBox().width;
+	          t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune
+	        }
+	      });
+	};
 
   const AutoScaleNegativeBar = function (stacked) {
     if (showBarValue) {
@@ -647,6 +679,62 @@ function nvd3Vis(element, props) {
         generateMultiLineTooltipContent(d, xAxisFormatter, yAxisFormatters));
       if (vizType === 'dual_line') {
         chart.showLegend(width > BREAKPOINTS.small);
+
+        chart.legendRightAxisHint('');
+
+        data[0].type = selectChart;
+        data[1].type = selectChart2;
+
+        const SetYLineDomain = function () {
+	        const domain = [chart.yDomain1,chart.yDomain2];
+          const MinScale = 0.05;
+	        const MaxScale = [scaleY,scaleY2];
+          
+          data.forEach(function(series,i) {
+            let yMax = d3.max(series.values, d => (d.y));
+            let yMin = d3.min(series.values, d => (d.y));
+            let y = yMin < (yMax - yMin) * MinScale ? 0 : (yMax - yMin) * MinScale;
+            domain[i]([yMin - y, yMax * MaxScale[i]]);
+          });
+
+        };
+
+        chart.interpolate('cardinal');
+        chart.lines1.padData(true);
+        chart.lines2.padData(true);
+
+        chart.stack1.padData(true);
+        chart.stack2.padData(true);
+        chart.stack1.clipEdge(true);
+        chart.stack2.clipEdge(true);
+
+        chart.bars1.clipEdge(true);
+        chart.bars2.clipEdge(true);
+
+        chart.scatters1.padData(true);
+        chart.scatters2.padData(true);
+        chart.yAxis1.showMaxMin(true);
+	      chart.yAxis2.showMaxMin(true);
+        
+
+        SetYLineDomain();
+
+        [chart.bars1, chart.bars2].forEach(function(bar){
+          bar.dispatch.on('renderEnd', function(e){
+            svg.selectAll('.nv-point')
+            .style('stroke-opacity', 1)
+            .style('fill-opacity', 1);
+    
+            setTimeout(function () {
+              let current = svg.select('g.bars1Wrap').selectAll('text.bar-chart-label');
+              if (!current.empty()) {
+                current.transition().duration(300).attr("y", 0).style("opacity", 0).remove();
+              }
+              addDualAxisBarValue(svg, yAxisFormat);
+            }, 200);
+          });
+        });
+        
       } else {
         chart.showLegend(showLegend);
       }
@@ -664,7 +752,7 @@ function nvd3Vis(element, props) {
       .call(chart);
 
     // align yAxis1 and yAxis2 ticks
-    if (isVizTypes(['dual_line', 'line_multi'])) {
+    if (isVizTypes(['line_multi'])) {
       const count = chart.yAxis1.ticks();
       const ticks1 = chart.yAxis1.scale()
         .domain(chart.yAxis1.domain())
@@ -692,6 +780,30 @@ function nvd3Vis(element, props) {
         chart.yAxis1.tickValues(ticks1);
         chart.yAxis2.tickValues(ticks2);
       }
+    }
+
+    // align yAxis1 and yAxis2 ticks
+    if (isVizTypes(['dual_line'])) {
+      const count = chart.yAxis1.ticks();
+      const t1 = chart.yAxis1.scale().domain(chart.yAxis1.domain()).nice(count).ticks(count);
+      const t2 = chart.yAxis2.scale().domain(chart.yAxis2.domain()).nice(count).ticks(count);
+      const diff = t1.length - t2.length;
+
+      const big = diff<0 ? t2 : t1;
+      const small = diff<0 ? t1 : t2;
+
+      const start = small[0];
+      const delta = small[1] - start;
+
+      for (let i = 0; i < Math.abs(diff); i++) {
+          small.push(small[small.length - 1] + delta);
+      }
+
+      chart.yDomain1([t1[0], t1[t1.length - 1]]);
+      chart.yDomain2([t2[0], t2[t2.length - 1]]);
+      chart.yAxis1.tickValues(t1);
+      chart.yAxis2.tickValues(t2);
+
     }
 
     if (showMarkers) {

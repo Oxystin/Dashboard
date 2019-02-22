@@ -54,6 +54,10 @@ export default function transformProps(chartProps) {
     yAxisLabel,
     yAxisShowminmax,
     yLogScale,
+    selectChart,
+    selectChart2,
+    scaleY,
+    scaleY2,
   } = formData;
 
   const rawData = payload.data || [];
@@ -112,5 +116,9 @@ export default function transformProps(chartProps) {
     yAxisShowMinMax: yAxisShowminmax,
     yField: y,
     yIsLogScale: yLogScale,
+    selectChart,
+    selectChart2,
+    scaleY,
+    scaleY2,
   };
 }
