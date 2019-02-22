@@ -21,7 +21,6 @@
 }
 
 .country_map .text-layer {
-  color: #333333;
   text-anchor: middle;
   pointer-events: none;
 }

@@ -33,15 +33,17 @@ function CountryMap(element, props) {
 
   const container = element;
   const format = getNumberFormatter(numberFormat);
-  const colorScale = getSequentialSchemeRegistry()
-    .get(linearColorScheme)
-    .createLinearScale(d3Extent(data, v => v.metric));
+  const gradient = getSequentialSchemeRegistry().get(linearColorScheme);
+  const colorScale = gradient ? gradient.createLinearScale(d3Extent(data, v => v.metric)) : getSequentialSchemeRegistry().get('black_white').createLinearScale(d3Extent(data, v => v.metric));
   const colorMap = {};
   data.forEach((d) => {
     colorMap[d.country_id] = colorScale(d.metric);
   });
   const colorFn = d => colorMap[d.properties.ISO] || 'none';
 
+  var xd = 90;
+  var yd = 30;
+  const fontSize =12;
   const path = d3.geo.path();
   const div = d3.select(container);
   div.selectAll('*').remove();
@@ -60,9 +62,10 @@ function CountryMap(element, props) {
     .classed('map-layer', true);
   const textLayer = g.append('g')
     .classed('text-layer', true)
-    .attr('transform', `translate(${width / 2}, 45)`);
+    .attr('transform', `translate(${xd}, ${yd})`);
   const bigText = textLayer.append('text')
-    .classed('big-text', true);
+    .classed('big-text', true)
+    .style('font-size', fontSize);
   const resultText = textLayer.append('text')
     .classed('result-text', true)
     .attr('dy', '1em');
@@ -93,15 +96,12 @@ function CountryMap(element, props) {
     g.transition()
       .duration(750)
       .attr('transform', `translate(${halfWidth},${halfHeight})scale(${k})translate(${-x},${-y})`);
-    textLayer
-        .style('opacity', 0)
-        .attr('transform', `translate(0,0)translate(${x},${hasCenter ? (y - 5) : 45})`)
-      .transition()
-        .duration(750)
-        .style('opacity', 1);
+    textLayer.transition()
+      .duration(750)
+      .attr('transform', `translate(0,0)translate(${hasCenter ? (x) : xd},${hasCenter ? (y + 18) : yd})`)
     bigText.transition()
       .duration(750)
-      .style('font-size', hasCenter ? 6 : 16);
+      .style('font-size', hasCenter ? 6 : fontSize);
     resultText.transition()
       .duration(750)
       .style('font-size', hasCenter ? 16 : 24);

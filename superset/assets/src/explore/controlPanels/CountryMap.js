@@ -30,7 +30,7 @@ export default {
       description: 'Metric to display bottom title',
     },
     linear_color_scheme: {
-      renderTrigger: false,
+      renderTrigger: true,
     },
   },
 };
