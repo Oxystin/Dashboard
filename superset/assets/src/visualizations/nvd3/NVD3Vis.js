@@ -518,6 +518,7 @@ function nvd3Vis(element, props) {
         chart.xScale(d3.time.scale.utc());
         chart.useInteractiveGuideline(true);
         chart.xAxis.showMaxMin(false);
+        chart.interactiveLayer.tooltip.contentGenerator(d => generateRichLineTooltipContent(d, xAxisFormatter, yAxisFormatter));
         break;
 
       case 'bubble':
