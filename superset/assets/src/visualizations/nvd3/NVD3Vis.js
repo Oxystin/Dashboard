@@ -388,6 +388,51 @@ function nvd3Vis(element, props) {
         }
         chart.xScale(d3.time.scale.utc());
         chart.interpolate(lineInterpolation);
+
+
+        const SetYDomain = function (linedisabled) {
+          const scale = 0.05;
+          let yMax;
+          let yMin;
+
+          if (linedisabled) {
+            yMax = d3.max(data.map(function(array, i) {
+              if (linedisabled[i] === false) {return d3.max(array.values, d => (d.y))};
+            }));
+
+            yMin = d3.min(data.map(function(array, i) {
+              if (linedisabled[i] === false) {return d3.min(array.values, d => (d.y))};
+            }));
+
+          } else {
+
+            yMax = d3.max(data.map(function(array) {
+              return d3.max(array.values, d => (d.y));
+            }));
+
+            yMin = d3.min(data.map(function(array) {
+              return d3.min(array.values, d => (d.y));
+            }));
+          }
+
+          return [yMin - (yMax - yMin) * scale, yMax + (yMax - yMin) * scale];
+        }
+
+        chart.yDomain(SetYDomain());
+
+        chart.dispatch.on('stateChange', function(e) {
+            chart.yDomain(SetYDomain(e.disabled));
+        });
+
+        chart.dispatch.on('renderEnd', function(){
+          if (showMarkers) {
+            svg.selectAll('.nv-point')
+            .style('stroke-opacity', 1)
+            .style('fill-opacity', 1);
+          }
+        });
+
+
         break;
 
       case 'time_pivot':
