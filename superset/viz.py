@@ -703,7 +703,7 @@ class MarkupViz(BaseViz):
 
     """Use html or markdown to create a free form widget"""
 
-    viz_type = 'markup'
+    viz_type = 'script'
     verbose_name = _('Markup')
     is_timeseries = False
 

@@ -22,7 +22,7 @@ import thumbnail from './images/thumbnail.png';
 import transformProps from './transformProps';
 
 const metadata = new ChartMetadata({
-  name: t('Markup'),
+  name: t('Script'),
   description: 'HTML Markup',
   thumbnail,
 });

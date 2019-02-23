@@ -23,13 +23,11 @@ import './Markup.css';
 const propTypes = {
   className: PropTypes.string,
   height: PropTypes.number.isRequired,
-  isSeparator: PropTypes.bool,
   html: PropTypes.string,
   cssFiles: PropTypes.arrayOf(PropTypes.string),
 };
 const defaultProps = {
   className: '',
-  isSeparator: false,
   html: '',
 };
 
@@ -40,17 +38,17 @@ const CONTAINER_STYLE = {
 
 class Markup extends React.PureComponent {
   render() {
-    const { className, height, isSeparator, html, cssFiles } = this.props;
+    const { className, height, html, cssFiles } = this.props;
 
     return (
       <div
         className={className}
         style={CONTAINER_STYLE}
       >
-        <iframe
+        <iframe key={Math.random()} 
           title="superset-markup"
           frameBorder={0}
-          height={isSeparator ? height - 20 : height}
+          height={height}
           sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation"
           srcDoc={`
             <html>

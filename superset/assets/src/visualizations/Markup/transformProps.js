@@ -28,6 +28,5 @@ export default function transformProps(chartProps) {
     height,
     cssFiles,
     html,
-    isSeparator: vizType === 'separator',
   };
 }

@@ -78,7 +78,7 @@ export const controlPanelConfigs = {
   line: Line,
   line_multi: LineMulti,
   mapbox: Mapbox,
-  markup: Markup,
+  script: Markup,
   paired_ttest: PairedTtest,
   para: Para,
   partition: Partition,
