@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { XYChart, AreaSeries, CrossHair, LinearGradient, BarSeries, LineSeries, PointSeries, PatternLines} from '@data-ui/xy-chart';
-import { BRAND_COLOR } from '@superset-ui/color';
 import { computeMaxFontSize } from '../../modules/visUtils';
 
 import './BigNumber.css';
@@ -67,7 +66,7 @@ const defaultProps = {
   showTrendLine: true,
   startYAxisAtZero: false,
   trendLineData: null,
-  mainColor: BRAND_COLOR,
+  mainColor: '#565656',
   renderTooltip: renderTooltipFactory(identity),
   fillBackground: false,
   showPerc: false,

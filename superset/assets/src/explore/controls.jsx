@@ -55,7 +55,7 @@ import OptionDescription from '../components/OptionDescription';
 const categoricalSchemeRegistry = getCategoricalSchemeRegistry();
 const sequentialSchemeRegistry = getSequentialSchemeRegistry();
 
-const PRIMARY_COLOR = { r: 0, g: 122, b: 135, a: 1 };
+const PRIMARY_COLOR = { r: 86, g: 86, b: 86, a: 1 };
 
 const D3_FORMAT_DOCS = 'D3 format syntax: https://github.com/d3/d3-format';
 

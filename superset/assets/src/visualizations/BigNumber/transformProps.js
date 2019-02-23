@@ -22,6 +22,7 @@ export default function transformProps(chartProps) {
     dateTimeFormat,
     showPerc,
     selectChart,
+    steps,
   } = formData;
   const { data } = payload;
 
@@ -38,6 +39,14 @@ export default function transformProps(chartProps) {
     NegativeColor = color.rgb(r, g, b).hex();
   } else {
     NegativeColor = mainColor;
+  }
+
+  const isValidJson = function (json) {
+    try {
+        return JSON.parse(json);
+    } catch (e) {
+        return false;
+    }
   }
 
   let bigNumber;
@@ -71,6 +80,29 @@ export default function transformProps(chartProps) {
   } else {
     bigNumber = data[0][metricName];
     trendLineData = null;
+
+    const colorsRange = steps == '' ? false : isValidJson(steps);
+    var colorIndex = -1;
+    try {
+      if (colorsRange) {
+        for(var i = 0; i < colorsRange.value.length; i++) {
+          if (i == 0) {
+            if (bigNumber < colorsRange.value[0] ) {
+              colorIndex = 0;
+              break;
+            }
+          } else {
+            if (colorsRange.value[i-1] <= bigNumber && bigNumber < colorsRange.value[i] ) {
+              colorIndex = i;
+              break;
+            }
+          }
+        }
+        mainColor = colorIndex < 0 ? colorsRange.color[colorsRange.color.length-1] : colorsRange.color[colorIndex];
+      }
+    } catch (e) {
+      console.log ('ERROR: ' + e.name + ' - ' + e.message );
+    }
   }
 
   let className = '';

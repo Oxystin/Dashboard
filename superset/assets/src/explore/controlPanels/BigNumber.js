@@ -29,12 +29,12 @@ export default {
     color_picker: {
       label: t('Positive Value'),
       description: t('Positive Value Color'),
-      default: {r: 29, g: 131, b: 72, a: 1},
+      default: {r: 84, g: 160, b: 92, a: 1},
     },
     fill_color_picker: {
       label: t('Negative Value'),
       description: t('Negative Value Color'),
-      default: {r: 203, g: 67, b: 53, a: 1},
+      default: {r: 214, g: 63, b: 43, a: 1},
     },
     show_perc: {
       label: t('Show delta'),
