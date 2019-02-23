@@ -46,6 +46,8 @@ function Sunburst(element, props) {
     height,
     colorScheme,
     metrics,
+    compareSuffix,
+    numberFormat,
   } = props;
 
   // vars with shared scope within this function
@@ -56,11 +58,15 @@ function Sunburst(element, props) {
   const visWidth = containerWidth - margin.left - margin.right;
   const visHeight = containerHeight - margin.top - margin.bottom - breadcrumbHeight;
   const radius = Math.min(visWidth, visHeight) / 2;
+  // 3 levels of text if inner-most level, 4 otherwise
+  const yOffsets = ['-30', '5', '32', '59', '86'];
+  const indicator = compareSuffix && compareSuffix !='' ? compareSuffix : metricLabel(metrics[1]) + '/' + metricLabel(metrics[0]);
 
   let colorByCategory = true; // color by category if primary/secondary metrics match
   let maxBreadcrumbs;
   let breadcrumbDims; // set based on data
   let totalSize; // total size of all segments; set after loading the data.
+  let totalSize2;
   let colorScale;
   let breadcrumbs;
   let vis;
@@ -80,8 +86,9 @@ function Sunburst(element, props) {
     .innerRadius(d => Math.sqrt(d.y))
     .outerRadius(d => Math.sqrt(d.y + d.dy));
 
-  const formatNum = getNumberFormatter(NumberFormats.SI_3_DIGIT);
-  const formatPerc = getNumberFormatter(NumberFormats.PERCENT_3_POINT);
+  const formatNum = getNumberFormatter(NumberFormats.SI_2_DIGIT);
+  const formatPerc = getNumberFormatter(NumberFormats.PERCENT_1_POINT);
+  const formatIndicator = getNumberFormatter(numberFormat);
 
   container.select('svg').remove();
 
@@ -182,8 +189,6 @@ function Sunburst(element, props) {
     const absolutePercString = formatPerc(absolutePercentage);
     const conditionalPercString = parentOfD ? formatPerc(conditionalPercentage) : '';
 
-    // 3 levels of text if inner-most level, 4 otherwise
-    const yOffsets = ['-25', '7', '35', '60'];
     let offsetIndex = 0;
 
     // If metrics match, assume we are coloring by category
@@ -194,24 +199,29 @@ function Sunburst(element, props) {
     gMiddleText.append('text')
       .attr('class', 'path-abs-percent')
       .attr('y', yOffsets[offsetIndex++])
-      .text(absolutePercString + ' of total');
+      .text(absolutePercString);
 
     if (conditionalPercString) {
       gMiddleText.append('text')
         .attr('class', 'path-cond-percent')
         .attr('y', yOffsets[offsetIndex++])
-        .text(conditionalPercString + ' of parent');
+        .text(d.name + ' → ' + d.parent.name + ': ' + conditionalPercString);
     }
 
     gMiddleText.append('text')
       .attr('class', 'path-metrics')
       .attr('y', yOffsets[offsetIndex++])
-      .text(`${metricLabel(metrics[0])}: ${formatNum(d.m1)}` + (metricsMatch ? '' : `, ${metricLabel(metrics[1])}: ${formatNum(d.m2)}`));
+      .text(metricsMatch ? '' : metricLabel(metrics[0]) + ': ' + formatNum(d.m1));
+
+      gMiddleText.append('text')
+      .attr('class', 'path-metrics')
+      .attr('y', yOffsets[offsetIndex++])
+      .text(metricsMatch ? '' : metricLabel(metrics[1]) + ': ' + formatNum(d.m2));
 
     gMiddleText.append('text')
       .attr('class', 'path-ratio')
       .attr('y', yOffsets[offsetIndex++])
-      .text((metricsMatch ? '' : (`${metricLabel(metrics[1])}/${metricLabel(metrics[0])}: ${formatPerc(d.m2 / d.m1)}`)));
+      .text((metricsMatch ? '' : (`${indicator}: ${formatIndicator(d.m2 / d.m1)}`)));
 
     // Reset and fade all the segments.
     arcs.selectAll('path')
@@ -228,12 +238,41 @@ function Sunburst(element, props) {
     updateBreadcrumbs(sequenceArray, absolutePercString);
   }
 
+  function drawnoSelection (){
+    let offsetIndex = 0;
+
+    // If metrics match, assume we are coloring by category
+    const metricsMatch = Math.abs(totalSize - totalSize2) < 0.00001;
+
+    gMiddleText.selectAll('*').remove();
+
+    gMiddleText.append('text')
+      .attr('class', 'path-abs-percent')
+      .attr('y', yOffsets[offsetIndex++])
+      .text("100%");
+
+      gMiddleText.append('text')
+      .attr('class', 'path-metrics')
+      .attr('y', yOffsets[offsetIndex++])
+      .text(metricsMatch ? '' : metricLabel(metrics[0]) + ': ' + formatNum(totalSize));
+
+      gMiddleText.append('text')
+      .attr('class', 'path-metrics')
+      .attr('y', yOffsets[offsetIndex++])
+      .text(metricsMatch ? '' : metricLabel(metrics[1]) + ': ' + formatNum(totalSize2));
+
+    gMiddleText.append('text')
+      .attr('class', 'path-metrics')
+      .attr('y', yOffsets[offsetIndex++])
+      .text((metricsMatch ? '' : indicator + ': ' + formatIndicator(totalSize2 / totalSize)));
+  }
+
   // Restore everything to full opacity when moving off the visualization.
   function mouseleave() {
     // Hide the breadcrumb trail
     breadcrumbs.style('visibility', 'hidden');
 
-    gMiddleText.selectAll('*').remove();
+    drawnoSelection ();
 
     // Deactivate all segments during transition.
     arcs.selectAll('path').on('mouseenter', null);
@@ -384,7 +423,10 @@ function Sunburst(element, props) {
         .on('mouseenter', mouseenter);
 
     // Get total size of the tree = value of root node from partition.
-    totalSize = root.value;
+    totalSize = root.m1;
+    totalSize2 = root.m2;
+
+    drawnoSelection();
   }
   createBreadcrumbs(data[0]);
   createVisualization(data);

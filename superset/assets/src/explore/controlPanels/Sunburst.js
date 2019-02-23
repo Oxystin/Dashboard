@@ -9,6 +9,7 @@ export default {
         ['groupby'],
         ['metric'],
         ['secondary_metric'],
+        ['compare_suffix','number_format'],
         ['adhoc_filters'],
         ['row_limit'],
       ],
@@ -36,6 +37,13 @@ export default {
     groupby: {
       label: t('Hierarchy'),
       description: t('This defines the level of the hierarchy'),
+    },
+    compare_suffix: {
+      label: t('Third indicator'),
+      description: t('The name of the third indicator'),
+    },
+    number_format: {
+      description: t('Number format of the third indicator'),
     },
   },
 };

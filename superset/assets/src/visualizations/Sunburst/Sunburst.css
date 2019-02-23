@@ -7,21 +7,23 @@
 }
 .sunburst .center-label {
   text-anchor: middle;
-  fill: #333;
+  fill: #666;
   pointer-events: none;
 }
 .sunburst .path-abs-percent {
-  font-size: 3em;
+  font-size: 5.5em;
   font-weight: 700;
 }
 .sunburst .path-cond-percent {
-  font-size: 2em;
+  font-size: 1.8em;
 }
 .sunburst .path-metrics {
-  color: #777;
+  font-size: 1.5em;
+  fill: #666;
 }
 .sunburst .path-ratio {
   color: #777;
+  font-size: 1.5em;
 }
 
 .sunburst .breadcrumbs text {
@@ -36,11 +38,11 @@
   font-size: 1em;
 }
 .dashboard .sunburst .path-abs-percent {
-  font-size: 2em;
+  font-size: 3em;
   font-weight: 700;
 }
 .dashboard .sunburst .path-cond-percent {
-  font-size: 1.5em;
+  font-size: 1.3em;
 }
 .dashboard .sunburst .path-metrics {
   font-size: 1em;

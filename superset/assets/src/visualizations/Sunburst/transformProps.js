@@ -1,6 +1,6 @@
 export default function transformProps(chartProps) {
   const { width, height, formData, payload } = chartProps;
-  const { colorScheme, metric, secondaryMetric } = formData;
+  const { colorScheme, metric, secondaryMetric, compareSuffix, numberFormat} = formData;
 
   return {
     width,
@@ -8,5 +8,7 @@ export default function transformProps(chartProps) {
     data: payload.data,
     colorScheme,
     metrics: [metric, secondaryMetric],
+    compareSuffix,
+    numberFormat,
   };
 }
