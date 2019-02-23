@@ -62,6 +62,8 @@ export default function transformProps(chartProps) {
         formattedSubheader = `${formatPercentChange(percentChange)} ${compareSuffix}`;
       }
       bigNumber = showPerc ? bigNumber - compareValue : bigNumber;
+    } else {
+      formattedSubheader = compareSuffix;
     }
     trendLineData = supportAndShowTrendLine
       ? sortedData.map(point => ({ x: point[TIME_COLUMN], y: point[metricName] }))
@@ -96,6 +98,7 @@ export default function transformProps(chartProps) {
     trendLineData,
     fillBackground,
     showPerc,
-    selectChart,    
+    selectChart,
+    compareLag,
   };
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { XYChart, AreaSeries, CrossHair, LinearGradient, BarSeries, LineSeries } from '@data-ui/xy-chart';
+import { XYChart, AreaSeries, CrossHair, LinearGradient, BarSeries, LineSeries, PointSeries, PatternLines} from '@data-ui/xy-chart';
 import { BRAND_COLOR } from '@superset-ui/color';
 import { computeMaxFontSize } from '../../modules/visUtils';
 
@@ -17,9 +17,9 @@ const CHART_MARGIN = {
 const PROPORTION = {
   HEADER: 0.4,
   SUBHEADER: 0.14,
-  HEADER_WITH_TRENDLINE: 0.35,
-  SUBHEADER_WITH_TRENDLINE: 0.14,
-  TRENDLINE: 0.35,
+  HEADER_WITH_TRENDLINE: 0.4,
+  SUBHEADER_WITH_TRENDLINE: 0.15,
+  TRENDLINE: 0.4,
 };
 
 export function renderTooltipFactory(formatValue, formatTime) {
@@ -58,6 +58,7 @@ const propTypes = {
   dateTimeFormat: PropTypes.string,
   showPerc: PropTypes.bool,
   selectChart: PropTypes.string,
+  compareLag: PropTypes.number.isRequired,
 };
 const defaultProps = {
   className: '',
@@ -166,6 +167,7 @@ class BigNumberVis extends React.PureComponent {
       startYAxisAtZero,
       fillBackground,
       selectChart,
+      compareLag,
     } = this.props;
 
     const grad = fillBackground ? mainColor : "#fff";
@@ -197,6 +199,19 @@ class BigNumberVis extends React.PureComponent {
               fill={`url(#${this.gradientId})`}
               stroke={fillcolor}
             />
+            <PatternLines
+              id="bar_pattern"
+              height={6}
+              width={6}
+              stroke={grad}
+              strokeWidth={1}
+              orientation={[ "diagonal" ]}
+            />
+            <BarSeries
+              data={[trendLineData[trendLineData.length - 1],trendLineData[trendLineData.length - compareLag -1]]}
+              fill="url(#bar_pattern)"
+              stroke={fillcolor}
+            />
           </XYChart>
         );
         break;
@@ -224,6 +239,13 @@ class BigNumberVis extends React.PureComponent {
               data={trendLineData}
               curve="linear"
               stroke={fillcolor}
+            />
+            <PointSeries
+              fill={grad}
+              stroke={fillcolor}
+              strokeWidth={2}
+              size={3}
+              data={[trendLineData[trendLineData.length - 1],trendLineData[trendLineData.length - compareLag -1]]}
             />
             <CrossHair
               stroke={fillcolor}
@@ -261,6 +283,13 @@ class BigNumberVis extends React.PureComponent {
               fill={`url(#${this.gradientId})`}
               stroke={fillcolor}
             />
+            <PointSeries
+              fill={grad}
+              stroke={fillcolor}
+              strokeWidth={2}
+              size={3}
+              data={[trendLineData[trendLineData.length - 1],trendLineData[trendLineData.length - compareLag -1]]}
+            />
             <CrossHair
               stroke={fillcolor}
               circleFill={fillcolor}
@@ -281,7 +310,7 @@ class BigNumberVis extends React.PureComponent {
 
     if (showTrendLine) {
       const chartHeight = Math.floor(PROPORTION.TRENDLINE * height);
-      const allTextHeight = height - chartHeight;
+      const allTextHeight = PROPORTION.HEADER_WITH_TRENDLINE * height;
       return (
         <div className={className}
         style = {{background: fillcolor}}
@@ -290,10 +319,10 @@ class BigNumberVis extends React.PureComponent {
             className="text_container"
             style={{ height: allTextHeight }}
           >
-            {this.renderHeader(Math.ceil(PROPORTION.HEADER_WITH_TRENDLINE * height))}
-            {this.renderSubheader(Math.ceil(PROPORTION.SUBHEADER_WITH_TRENDLINE * height))}
+            {this.renderHeader(Math.ceil(allTextHeight))}
           </div>
           {this.renderTrendline(chartHeight)}
+          {this.renderSubheader(Math.ceil(PROPORTION.SUBHEADER_WITH_TRENDLINE * height))}
         </div>
       );
     }

@@ -39,6 +39,9 @@ export default {
     show_perc: {
       label: t('Show delta'),
       description: t('Show delta value'),
+      default: true,
+    },
+    start_y_axis_at_zero: {
       default: false,
     },
   },
