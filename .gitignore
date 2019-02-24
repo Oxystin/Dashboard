@@ -44,3 +44,10 @@ yarn-error.log
 *.iml
 venv
 @eaDir/
+.cache/
+.bash_history
+.yarnrc
+superset/config.py
+.v8flags*
+.babel.json
+superset/assets/backendSync.json

@@ -1,4 +1,3 @@
-# pylint: disable=C,R,W
 """The main config file for Superset
 
 All configuration in this file can be overridden by providing a superset_config
@@ -11,8 +10,9 @@ import json
 import os
 import sys
 
+from celery.schedules import crontab
 from dateutil import tz
-from flask_appbuilder.security.manager import AUTH_DB
+from flask_appbuilder.security.manager import AUTH_DB, AUTH_LDAP
 
 from superset.stats_logger import DummyStatsLogger
 
@@ -37,7 +37,7 @@ ROW_LIMIT = 50000
 VIZ_ROW_LIMIT = 10000
 # max rows retrieved by filter select auto complete
 FILTER_SELECT_ROW_LIMIT = 10000
-SUPERSET_WORKERS = 2  # deprecated
+SUPERSET_WORKERS = 4  # deprecated
 SUPERSET_CELERY_WORKERS = 32  # deprecated
 
 SUPERSET_WEBSERVER_ADDRESS = '0.0.0.0'
@@ -53,7 +53,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = '\2\1thisismyscretkey\1\2\e\y\y\h'  # noqa
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(DATA_DIR, 'superset.db')
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:base@192.168.1.200:5432/dashboard'
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'
 
@@ -76,7 +76,7 @@ WTF_CSRF_ENABLED = True
 WTF_CSRF_EXEMPT_LIST = []
 
 # Whether to run the web server in debug mode or not
-DEBUG = False
+DEBUG = os.environ.get('FLASK_ENV') == 'development'
 FLASK_USE_RELOAD = True
 
 # Whether to show the stacktrace on 500 error
@@ -89,10 +89,15 @@ ENABLE_PROXY_FIX = False
 # GLOBALS FOR APP Builder
 # ------------------------------
 # Uncomment to setup Your App name
-APP_NAME = 'Dashboard'
+APP_NAME = 'MTS Dashboard'
 
 # Uncomment to setup an App icon
 APP_ICON = '/static/assets/images/superset-logo@2x.png'
+APP_ICON_WIDTH = 126
+
+# Uncomment to specify where clicking the logo would take the user
+# e.g. setting it to '/welcome' would take the user to '/superset/welcome'
+LOGO_TARGET_PATH = None
 
 # Druid query timezone
 # tz.tzutc() : Using utc timezone
@@ -122,13 +127,17 @@ AUTH_TYPE = AUTH_DB
 # AUTH_ROLE_PUBLIC = 'Public'
 
 # Will allow user self registration
-# AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION = True
 
 # The default user self registration role
-# AUTH_USER_REGISTRATION_ROLE = "Public"
+AUTH_USER_REGISTRATION_ROLE = "Gamma"
 
 # When using LDAP Auth, setup the ldap server
-# AUTH_LDAP_SERVER = "ldap://ldapserver.new"
+AUTH_LDAP_SERVER = "ldap://ldap-slave3.msk.mts.ru"
+AUTH_LDAP_BIND_USER = "UID=SA0001mtsdashadmin,OU=TechUsers,OU=People,DC=mts,DC=ru"
+AUTH_LDAP_USE_TLS = False
+AUTH_LDAP_SEARCH = "DC=mts,DC=ru"
+AUTH_LDAP_BIND_PASSWORD = "ohNg4chi"
 
 # Uncomment to setup OpenID providers example for OpenID authentication
 # OPENID_PROVIDERS = [
@@ -149,7 +158,7 @@ PUBLIC_ROLE_LIKE_GAMMA = False
 # Babel config for translations
 # ---------------------------------------------------
 # Setup default language
-BABEL_DEFAULT_LOCALE = 'en'
+BABEL_DEFAULT_LOCALE = 'ru'
 # Your application default translation path
 BABEL_DEFAULT_FOLDER = 'superset/translations'
 # The allowed translation for you app
@@ -163,14 +172,18 @@ LANGUAGES = {
     'pt': {'flag': 'pt', 'name': 'Portuguese'},
     'pt_BR': {'flag': 'br', 'name': 'Brazilian Portuguese'},
     'ru': {'flag': 'ru', 'name': 'Russian'},
+    'ko': {'flag': 'kr', 'name': 'Korean'},
 }
 
 # ---------------------------------------------------
 # Feature flags
 # ---------------------------------------------------
-# Feature flags that are on by default go here. Their
-# values can be overridden by those in super_config.py
-FEATURE_FLAGS = {}
+# Feature flags that are set by default go here. Their values can be
+# overwritten by those specified under FEATURE_FLAGS in super_config.py
+# For example, DEFAULT_FEATURE_FLAGS = { 'FOO': True, 'BAR': False } here
+# and FEATURE_FLAGS = { 'BAR': True, 'BAZ': True } in superset_config.py
+# will result in combined feature flags of { 'FOO': True, 'BAR': True, 'BAZ': True }
+DEFAULT_FEATURE_FLAGS = {}
 
 # ---------------------------------------------------
 # Image and file configuration
@@ -187,7 +200,15 @@ IMG_UPLOAD_URL = '/static/uploads/'
 # IMG_SIZE = (300, 200, True)
 
 CACHE_DEFAULT_TIMEOUT = 60 * 60 * 24
-CACHE_CONFIG = {'CACHE_TYPE': 'null'}
+CACHE_CONFIG = {
+'CACHE_TYPE': 'redis',
+'CACHE_DEFAULT_TIMEOUT': 86400,
+'CACHE_KEY_PREFIX': 'superset_',
+'CACHE_REDIS_HOST': 'redis',
+'CACHE_REDIS_PORT': 6379,
+'CACHE_REDIS_DB': 1,
+'CACHE_REDIS_URL': 'redis://192.168.1.200:6379/1'
+}
 TABLE_NAMES_CACHE_CONFIG = {'CACHE_TYPE': 'null'}
 
 # CORS Options
@@ -208,7 +229,7 @@ ALLOWED_EXTENSIONS = set(['csv'])
 # CSV Options: key/value pairs that will be passed as argument to DataFrame.to_csv method
 # note: index option should not be overridden
 CSV_EXPORT = {
-    'encoding': 'utf-8',
+    'encoding': 'cp1251',
 }
 
 # ---------------------------------------------------
@@ -281,8 +302,22 @@ ROLLOVER = 'midnight'
 INTERVAL = 1
 BACKUP_COUNT = 30
 
+# Custom logger for auditing queries. This can be used to send ran queries to a
+# structured immutable store for auditing purposes. The function is called for
+# every query ran, in both SQL Lab and charts/dashboards.
+# def QUERY_LOGGER(
+#     database,
+#     query,
+#     schema=None,
+#     user=None,
+#     client=None,
+#     security_manager=None,
+# ):
+#     pass
+
 # Set this API key to enable Mapbox visualizations
-MAPBOX_API_KEY = os.environ.get('MAPBOX_API_KEY', '')
+#MAPBOX_API_KEY = os.environ.get('MAPBOX_API_KEY', '')
+MAPBOX_API_KEY = 'pk.eyJ1Ijoib3h5c3RpbiIsImEiOiJjajhkMjV6MWYwYzkzMndvOXV4ZGxkd3Z5In0.4ppDji60AcQmHxq-iTOMAw'
 
 # Maximum number of rows returned from a database
 # in async mode, no more than SQL_MAX_ROW will be returned and stored
@@ -303,27 +338,51 @@ WARNING_MSG = None
 # Default celery config is to use SQLA as a broker, in a production setting
 # you'll want to use a proper broker as specified here:
 # http://docs.celeryproject.org/en/latest/getting-started/brokers/index.html
-"""
-# Example:
+
+
 class CeleryConfig(object):
-  BROKER_URL = 'sqla+sqlite:///celerydb.sqlite'
-  CELERY_IMPORTS = ('superset.sql_lab', )
-  CELERY_RESULT_BACKEND = 'db+sqlite:///celery_results.sqlite'
-  CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
-  CELERYD_LOG_LEVEL = 'DEBUG'
-  CELERYD_PREFETCH_MULTIPLIER = 1
-  CELERY_ACKS_LATE = True
+    BROKER_URL = 'sqla+sqlite:///celerydb.sqlite'
+    CELERY_IMPORTS = (
+        'superset.sql_lab',
+        'superset.tasks',
+    )
+    CELERY_RESULT_BACKEND = 'db+sqlite:///celery_results.sqlite'
+    CELERYD_LOG_LEVEL = 'DEBUG'
+    CELERYD_PREFETCH_MULTIPLIER = 1
+    CELERY_ACKS_LATE = True
+    CELERY_ANNOTATIONS = {
+        'sql_lab.get_sql_results': {
+            'rate_limit': '100/s',
+        },
+        'email_reports.send': {
+            'rate_limit': '1/s',
+            'time_limit': 120,
+            'soft_time_limit': 150,
+            'ignore_result': True,
+        },
+    }
+    CELERYBEAT_SCHEDULE = {
+        'email_reports.schedule_hourly': {
+            'task': 'email_reports.schedule_hourly',
+            'schedule': crontab(minute=1, hour='*'),
+        },
+    }
+
+
 CELERY_CONFIG = CeleryConfig
+
 """
+# Set celery config to None to disable all the above configuration
 CELERY_CONFIG = None
+"""
 
 # static http headers to be served by your Superset server.
 # This header prevents iFrames from other domains and
 # "clickjacking" as a result
-HTTP_HEADERS = {'X-Frame-Options': 'SAMEORIGIN'}
+# HTTP_HEADERS = {'X-Frame-Options': 'SAMEORIGIN'}
 # If you need to allow iframes from other domains (and are
 # aware of the risks), you can disable this header:
-# HTTP_HEADERS = {}
+HTTP_HEADERS = {}
 
 # The db id here results in selecting this one as a default in SQL Lab
 DEFAULT_DB_ID = None
@@ -378,14 +437,14 @@ FLASK_APP_MUTATOR = None
 ENABLE_ACCESS_REQUEST = False
 
 # smtp server configuration
-EMAIL_NOTIFICATIONS = False  # all the emails are sent using dryrun
-SMTP_HOST = 'localhost'
+EMAIL_NOTIFICATIONS = True  # all the emails are sent using dryrun
+SMTP_HOST = 'mail.inside.mts.ru'
 SMTP_STARTTLS = True
 SMTP_SSL = False
-SMTP_USER = 'superset'
+SMTP_USER = 'mts-dashboard@mts.ru'
 SMTP_PORT = 25
-SMTP_PASSWORD = 'superset'
-SMTP_MAIL_FROM = 'superset@superset.com'
+SMTP_PASSWORD = 'ep8Jfu9w'
+SMTP_MAIL_FROM = 'mts-dashboard@mts.ru'
 
 if not CACHE_DEFAULT_TIMEOUT:
     CACHE_DEFAULT_TIMEOUT = CACHE_CONFIG.get('CACHE_DEFAULT_TIMEOUT')
@@ -434,7 +493,7 @@ DASHBOARD_TEMPLATE_ID = None
 # username. The function receives the connection uri object, connection
 # params, the username, and returns the mutated uri and params objects.
 # Example:
-#   def DB_CONNECTION_MUTATOR(uri, params, username, security_manager):
+#   def DB_CONNECTION_MUTATOR(uri, params, username, security_manager, source):
 #       user = security_manager.find_user(username=username)
 #       if user and user.email:
 #           uri.username = user.email
@@ -456,6 +515,67 @@ SQL_QUERY_MUTATOR = None
 # When not using gunicorn, (nginx for instance), you may want to disable
 # using flask-compress
 ENABLE_FLASK_COMPRESS = True
+
+# Enable / disable scheduled email reports
+ENABLE_SCHEDULED_EMAIL_REPORTS = False
+
+# If enabled, certail features are run in debug mode
+# Current list:
+# * Emails are sent using dry-run mode (logging only)
+SCHEDULED_EMAIL_DEBUG_MODE = False
+
+# Email reports - minimum time resolution (in minutes) for the crontab
+EMAIL_REPORTS_CRON_RESOLUTION = 15
+
+# Email report configuration
+# From address in emails
+EMAIL_REPORT_FROM_ADDRESS = 'report@sup.org'
+
+# Send bcc of all reports to this address. Set to None to disable.
+# This is useful for maintaining an audit trail of all email deliveries.
+EMAIL_REPORT_BCC_ADDRESS = None
+
+# User credentials to use for generating reports
+# This user should have permissions to browse all the dashboards and
+# slices.
+# TODO: In the future, login as the owner of the item to generate reports
+EMAIL_REPORTS_USER = 'admin'
+EMAIL_REPORTS_SUBJECT_PREFIX = '[Report] '
+
+# The webdriver to use for generating reports. Use one of the following
+# firefox
+#   Requires: geckodriver and firefox installations
+#   Limitations: can be buggy at times
+# chrome:
+#   Requires: headless chrome
+#   Limitations: unable to generate screenshots of elements
+EMAIL_REPORTS_WEBDRIVER = 'firefox'
+
+# Window size - this will impact the rendering of the data
+WEBDRIVER_WINDOW = {
+    'dashboard': (1600, 2000),
+    'slice': (3000, 1200),
+}
+
+# Any config options to be passed as-is to the webdriver
+WEBDRIVER_CONFIGURATION = {}
+
+# The base URL to query for accessing the user interface
+WEBDRIVER_BASEURL = 'http://0.0.0.0:8080/'
+
+# Send user to a link where they can report bugs
+BUG_REPORT_URL = None
+
+# What is the Last N days relative in the time selector to:
+# 'today' means it is midnight (00:00:00) of today in the local timezone
+# 'now' means it is relative to the query issue time
+DEFAULT_RELATIVE_END_TIME = 'now'
+
+# Is epoch_s/epoch_ms datetime format supposed to be considered since UTC ?
+# If not, it is sassumed then the epoch_s/epoch_ms is seconds since 1/1/1970
+# localtime (in the tz where the superset webserver is running)
+IS_EPOCH_S_TRULY_UTC = False
+
 
 try:
     if CONFIG_PATH_ENV_VAR in os.environ:
