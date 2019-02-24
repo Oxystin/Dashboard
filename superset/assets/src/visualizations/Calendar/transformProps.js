@@ -11,6 +11,7 @@ export default function transformProps(chartProps) {
     steps,
     xAxisTimeFormat,
     yAxisFormat,
+    dateTimeFormat,
   } = formData;
 
   const { verboseMap } = datasource;
@@ -29,5 +30,6 @@ export default function transformProps(chartProps) {
     timeFormat: xAxisTimeFormat,
     valueFormat: yAxisFormat,
     verboseMap,
+    dateTimeFormat,
   };
 }

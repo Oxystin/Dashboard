@@ -34,6 +34,7 @@ const propTypes = {
   showValues: PropTypes.bool,
   steps: PropTypes.number,
   timeFormat: PropTypes.string,
+  dateTimeFormat: PropTypes.string,
   valueFormat: PropTypes.string,
   verboseMap: PropTypes.object,
 };
@@ -53,6 +54,7 @@ function Calendar(element, props) {
     timeFormat,
     valueFormat,
     verboseMap,
+    dateTimeFormat,
   } = props;
 
   const valueFormatter = getNumberFormatter(valueFormat);
@@ -108,6 +110,7 @@ function Calendar(element, props) {
       tooltip: true,
       domain: data.domain,
       subDomain: data.subdomain,
+      domainLabelFormat: dateTimeFormat,
       range: data.range,
       browsing: true,
       legend,

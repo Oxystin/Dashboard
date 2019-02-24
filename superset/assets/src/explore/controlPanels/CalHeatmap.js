@@ -20,6 +20,7 @@ export default {
         ['cell_size', 'cell_padding'],
         ['cell_radius', 'steps'],
         ['y_axis_format', 'x_axis_time_format'],
+        ['date_time_format'],
         ['show_legend', 'show_values'],
         ['show_metric_name', null],
       ],
@@ -34,6 +35,10 @@ export default {
     },
     show_values: {
       default: false,
+    },
+    date_time_format: {
+      label: t('Domain Time Format'),
+      default: '%b',
     },
   },
 };
