@@ -41,6 +41,38 @@ import {
 } from './PropTypes';
 import './NVD3Vis.css';
 
+// -------------- RU LOCALISATION START---------------------
+var RU = d3.locale({
+  "decimal": ".",
+  "thousands": " ",
+  "grouping": [3],
+  "currency": ["₽", ""],
+  "dateTime": "%A, %e %B %Y г.",
+  "date": "%d.%m.%Y",
+  "time": "%H:%M:%S",
+  "periods": ["AM", "PM"],
+  "days": ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],
+  "shortDays": ["вс", "пн", "вт", "ср", "чт", "пт", "сб"],
+  "months": ["1Q", "1Q", "1Q", "2Q", "2Q", "2Q", "3Q", "3Q", "3Q", "4Q", "4Q", "4Q"],
+  "shortMonths": ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
+});
+
+d3.time.format = RU.timeFormat;
+d3.format = RU.numberFormat;
+
+const d3TimeFormatPreset = function (format) {
+  if (format === 'smart_date') {
+    format = '%m/%y';
+  } 
+  const f = d3.time.format(format);
+  return function (dttm) {
+    const d = new Date(dttm);
+    return f(d);
+  };
+};
+
+// -------------- RU LOCALISATION END ---------------------
+
 const { getColor, getScale } = CategoricalColorNamespace;
 
 // Limit on how large axes margins can grow as the chart window is resized
@@ -230,6 +262,7 @@ function nvd3Vis(element, props) {
     selectChart2,
     scaleY,
     scaleY2,
+    autoScaleNegative,
   } = props;
 
   const isExplore = document.querySelector('#explorer-container') !== null;
@@ -274,7 +307,7 @@ function nvd3Vis(element, props) {
 	};
 
   const AutoScaleNegativeBar = function (stacked) {
-    if (showBarValue) {
+    if (showBarValue && autoScaleNegative) {
 
         let yMin;
         let yMax=0;
@@ -471,8 +504,8 @@ function nvd3Vis(element, props) {
     
         chart.dispatch.on('stateChange', function(e) {
           if (showBarValue) {
-            AutoScaleNegativeBar(e.stacked);
             RemoveTotalBarValues(svg);
+            AutoScaleNegativeBar(e.stacked);
             setTimeout(function () {
               drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
             }, ANIMATION_TIME+300);
@@ -513,8 +546,8 @@ function nvd3Vis(element, props) {
     
         chart.dispatch.on('stateChange', function(e) {
           if (showBarValue) {
-            AutoScaleNegativeBar(e.stacked);
             RemoveTotalBarValues(svg);
+            AutoScaleNegativeBar(e.stacked);
             setTimeout(function () {
               drawBarValues(svg, chart, data, e.stacked, yAxisFormat);
             }, ANIMATION_TIME+300);
@@ -653,9 +686,9 @@ function nvd3Vis(element, props) {
 
     let xAxisFormatter;
     if (isTimeSeries) {
-      xAxisFormatter = getTimeFormatter(xAxisFormat);
+      xAxisFormatter = d3TimeFormatPreset(xAxisFormat);
       // In tooltips, always use the verbose time format
-      chart.interactiveLayer.tooltip.headerFormatter(smartDateVerboseFormatter);
+      //chart.interactiveLayer.tooltip.headerFormatter(smartDateVerboseFormatter);
     } else {
       xAxisFormatter = getTimeOrNumberFormatter(xAxisFormat);
     }
@@ -679,12 +712,7 @@ function nvd3Vis(element, props) {
       chart.y2Axis.tickFormat(yAxisFormatter);
     }
 
-    if (chart.yAxis) {
-      chart.yAxis.ticks(5);
-    }
-    if (chart.y2Axis) {
-      chart.y2Axis.ticks(5);
-    }
+
 
     // Set showMaxMin for all axis
     setAxisShowMaxMin(chart.xAxis, xAxisShowMinMax);
@@ -870,22 +898,24 @@ function nvd3Vis(element, props) {
       // - adjust margins based on these measures and render again
       const margins = chart.margin();
       if (chart.xAxis) {
-        margins.bottom = 28;
+        margins.bottom = 18;
       }
       const maxYAxisLabelWidth = getMaxLabelSize(svg, chart.yAxis2 ? 'nv-y1' : 'nv-y');
       const maxXAxisLabelHeight = getMaxLabelSize(svg, 'nv-x');
-      margins.left = maxYAxisLabelWidth + marginPad;
+      margins.right = 5;
+      margins.top = 0;
+      margins.left = 45; //maxYAxisLabelWidth + marginPad;
 
       if (yAxisLabel && yAxisLabel !== '') {
         margins.left += 25;
       }
       if (showBarValue) {
         // Add more margin to avoid label colliding with legend.
-        margins.top += 24;
+        margins.top += 18;
       }
-      if (xAxisShowMinMax) {
+      if (xAxisShowMinMax && !isVizTypes(['dist_bar', 'bar'])) {
         // If x bounds are shown, we need a right margin
-        margins.right = Math.max(20, maxXAxisLabelHeight / 2) + marginPad;
+        margins.right = 20; //Math.max(20, maxXAxisLabelHeight / 2) + marginPad;
       }
       if (xLabelRotation === 45) {
         margins.bottom = (
@@ -895,7 +925,7 @@ function nvd3Vis(element, props) {
           maxXAxisLabelHeight * Math.cos(Math.PI * xLabelRotation / 180)
         ) + marginPad;
       } else if (staggerLabels) {
-        margins.bottom = 40;
+        margins.bottom = 30;
       }
 
       if (isVizTypes(['dual_line', 'line_multi'])) {

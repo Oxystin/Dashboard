@@ -78,21 +78,23 @@ export function drawBarValues(svg, chart, data, stacked, axisFormat) {
             rectsToBeLabeled.each(
               function (d, index) {
                 const y = totalStackedValues[index][i];
-                const dy = (y > 0) ? dy_positive : dy_negative;
-                const rectObj = d3.select(this);
-                const transformAttr = rectObj.attr('transform');
-                const yPos = yScale(y);
-                const xPos = parseFloat(rectObj.attr('x'));
-                const rectWidth = parseFloat(rectObj.attr('width'));
-                const t = groupLabels.append('text')
-                  .attr('x', xPos) // rough position first, fine tune later
-                  .attr('y', yPos - dy)
-                  .text(format(y))
-                  .attr('transform', transformAttr)
-                  .attr('class', 'bar-chart-label')
-                  .style("opacity", 0);
-                const labelWidth = t.node().getBBox().width;
-                t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
+                if (y != 0) {
+                  const dy = (y > 0) ? dy_positive : dy_negative;
+                  const rectObj = d3.select(this);
+                  const transformAttr = rectObj.attr('transform');
+                  const yPos = yScale(y);
+                  const xPos = parseFloat(rectObj.attr('x'));
+                  const rectWidth = parseFloat(rectObj.attr('width'));
+                  const t = groupLabels.append('text')
+                    .attr('x', xPos) // rough position first, fine tune later
+                    .attr('y', yPos - dy)
+                    .text(format(y))
+                    .attr('transform', transformAttr)
+                    .attr('class', 'bar-chart-label')
+                    .style("opacity", 0);
+                  const labelWidth = t.node().getBBox().width;
+                  t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
+                }
               }
             );
           }       
@@ -102,21 +104,23 @@ export function drawBarValues(svg, chart, data, stacked, axisFormat) {
       rectsToBeLabeled.each(
         function (d, index) {
           const y = stacked ? totalStackedValues[index][0] : d.y
-          const dy = (y > 0) ? dy_positive : dy_negative;
-          const rectObj = d3.select(this);
-          const transformAttr = rectObj.attr('transform');
-          const yPos = yScale(y);
-          const xPos = parseFloat(rectObj.attr('x'));
-          const rectWidth = parseFloat(rectObj.attr('width'));
-          const t = groupLabels.append('text')
-            .attr('x', xPos) // rough position first, fine tune later
-            .attr('y', yPos - dy)
-            .text(format(y))
-            .attr('transform', transformAttr)
-            .attr('class', 'bar-chart-label')
-            .style("opacity", 0);
-          const labelWidth = t.node().getBBox().width;
-          t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
+          if (y != 0) {
+            const dy = (y > 0) ? dy_positive : dy_negative;
+            const rectObj = d3.select(this);
+            const transformAttr = rectObj.attr('transform');
+            const yPos = yScale(y);
+            const xPos = parseFloat(rectObj.attr('x'));
+            const rectWidth = parseFloat(rectObj.attr('width'));
+            const t = groupLabels.append('text')
+              .attr('x', xPos) // rough position first, fine tune later
+              .attr('y', yPos - dy)
+              .text(format(y))
+              .attr('transform', transformAttr)
+              .attr('class', 'bar-chart-label')
+              .style("opacity", 0);
+            const labelWidth = t.node().getBBox().width;
+            t.transition().duration(300).style("opacity", 1).attr('x', xPos + rectWidth / 2 - labelWidth / 2); // fine tune 
+          }
         }
       );
     }

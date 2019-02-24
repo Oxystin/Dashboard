@@ -33,6 +33,7 @@ export default {
         ['y_axis_label', 'left_margin'],
         ['y_axis_showminmax', 'y_log_scale'],
         ['y_axis_format', 'y_axis_bounds'],
+        ['auto_scale_negative'],
       ],
     },
     NVD3TimeSeries[1],

@@ -1469,6 +1469,14 @@ export const controls = {
     description: t('Whether to align the background chart for +/- values'),
   },
 
+  auto_scale_negative: {
+    type: 'CheckboxControl',
+    label: t('Auto Scale Y'),
+    renderTrigger: true,
+    default: false,
+    description: t('Auto scale Y Axis Negative Value'),
+  },
+
   color_pn: {
     type: 'CheckboxControl',
     label: t('Color +/-'),
