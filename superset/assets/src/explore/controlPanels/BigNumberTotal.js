@@ -31,7 +31,7 @@ export default {
       renderTrigger: false,
       default: '',
       label: t('Force Color JSON'),
-      description: t('Force Color Steps by Range'),
+      description: t('Force Color Steps by Range. Example: {"value":[0.95,1],"color":[ "red", "yellow", "green"]}'),
     },
   },
 };
