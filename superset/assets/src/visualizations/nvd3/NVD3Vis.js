@@ -206,6 +206,7 @@ const propTypes = {
   sizeField: stringOrObjectWithLabelType,
   // time-pivot only
   baseColor: rgbObjectType,
+  steps: PropTypes.string,
 };
 
 const NOOP = () => {};
@@ -263,6 +264,7 @@ function nvd3Vis(element, props) {
     scaleY,
     scaleY2,
     autoScaleNegative,
+    steps,
   } = props;
 
   const isExplore = document.querySelector('#explorer-container') !== null;
@@ -277,6 +279,41 @@ function nvd3Vis(element, props) {
   function isVizTypes(types) {
     return types.indexOf(vizType) >= 0;
   }
+
+  const Custom_Style_Lines = function (svg, data){
+    try { //code validator !!!
+      if (steps.length > 0) {
+        const json = JSON.parse(steps);
+        const keys = data.filter(series => !series.disabled).map(series => series.key);
+        const legends = data.map(series => series.key);
+      
+        json.key.forEach(function(series_name) {
+          const index = keys.indexOf(series_name);
+          const legend_index = legends.indexOf(series_name);
+          if (index > 0 ){
+            const path = svg.selectAll('.nv-series-' + index + ' .nv-line');
+            path
+            .classed("line-dash", true)
+            .attr("stroke-dashoffset", 24)
+            .style("opacity", 1)
+            .transition()
+            .duration(2000)
+            .style("opacity", 0.8)
+            .attr("stroke-dashoffset", 0)
+            .style('stroke-dasharray', ('4', '4'));
+      
+            if (showLegend) {
+              const legend = svg.selectAll('circle.nv-legend-symbol')[0];
+              d3.select(legend[legend_index])
+                .classed("legend-dash", true)
+                .style('stroke-dasharray', '0.9')
+                .style('stroke', '#595959');
+            };
+          }
+        });      
+      }
+    } catch(e) {};
+  };
 
   const addDualAxisBarValue = function (svg, axisFormat) {
 	  const format = d3.format(axisFormat || '.3s');
@@ -458,6 +495,7 @@ function nvd3Vis(element, props) {
         });
 
         chart.dispatch.on('renderEnd', function(){
+          Custom_Style_Lines(svg, data);
           if (showMarkers) {
             svg.selectAll('.nv-point')
             .style('stroke-opacity', 1)

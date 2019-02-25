@@ -34,6 +34,13 @@ export default {
         ['y_axis_format', 'y_axis_bounds'],
       ],
     },
+    {
+      label: t('Advanced'),
+      expanded: true,
+      controlSetRows: [
+        ['steps'],
+      ],
+    },
     NVD3TimeSeries[1],
     annotations,
   ],
@@ -44,6 +51,14 @@ export default {
     },
     row_limit: {
       default: 50000,
+    },
+    steps: {
+      isInt: false,
+      validators: null,
+      renderTrigger: false,
+      default: '',
+      label: t('Dashed line JSON'),
+      description: t('Dashed line series. Example: {"key":["МТС","Т2"]}'),
     },
   },
 };

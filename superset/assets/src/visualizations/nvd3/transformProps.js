@@ -59,6 +59,7 @@ export default function transformProps(chartProps) {
     scaleY,
     scaleY2,
     autoScaleNegative,
+    steps,
   } = formData;
 
   const rawData = payload.data || [];
@@ -122,5 +123,6 @@ export default function transformProps(chartProps) {
     scaleY,
     scaleY2,
     autoScaleNegative,
+    steps,
   };
 }
