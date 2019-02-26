@@ -114,12 +114,14 @@ function PivotTable(element, props) {
   });
 
   // Add classname depending of the Category name
-  $container.find('tr th:nth-child(1)').each(function() {
-    const index = categoryClassname.keys.indexOf($(this).html());
-    if (index > -1 ) {
-      $(this).parent().addClass(categoryClassname.classname[index]);
-    }
-  });
+  if (categoryClassname) {
+    $container.find('tr th:nth-child(1)').each(function() {
+      const index = categoryClassname.keys.indexOf($(this).html());
+      if (index > -1 ) {
+        $(this).parent().addClass(categoryClassname.classname[index]);
+      }
+    });
+  }
 
   if (numGroups === 1) {
     // When there is only 1 group by column,
