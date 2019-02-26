@@ -20,6 +20,14 @@ export default {
         ['number_format', 'combine_metric'],
       ],
     },
+    {
+      label: t('Advanced'),
+      expanded: false,
+      controlSetRows: [
+        ['json_parameter'],
+        ['json_parameter_2'],
+      ],
+    },
   ],
   controlOverrides: {
     groupby: { includeTime: true },

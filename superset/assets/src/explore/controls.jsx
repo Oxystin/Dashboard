@@ -1475,6 +1475,20 @@ export const controls = {
     description: t('Keys force clear filter. Example: {"keys":["key1","key2"]}'),
   },
 
+  json_parameter: {
+    type: 'TextControl',
+    label: t('Number ClassName JSON'),
+    default: '',
+    description: t('Add ClassName depending of the value. Example: {"range":[0.95,1],"classname":[ "minimum", "middle", "maximum"]}'),
+  },
+
+  json_parameter_2: {
+    type: 'TextControl',
+    label: t('Category ClassName JSON'),
+    default: '',
+    description: t('Add ClassName depending of the Category. Example: {"keys":["name0", "name1", "name2"],"classname": ["hide", "classname_row_1", "classname_row_2"]}'),
+  },
+
   align_pn: {
     type: 'CheckboxControl',
     label: t('Align +/-'),

@@ -3,6 +3,8 @@ export default function transformProps(chartProps) {
   const {
     groupby,
     numberFormat,
+    jsonParameter,
+    jsonParameter2,
   } = formData;
   const {
     columnFormats,
@@ -16,5 +18,7 @@ export default function transformProps(chartProps) {
     numGroups: groupby.length,
     numberFormat,
     verboseMap,
+    jsonParameter,
+    jsonParameter2,
   };
 }

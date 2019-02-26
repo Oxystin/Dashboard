@@ -22,6 +22,8 @@ const propTypes = {
   numberFormat: PropTypes.string,
   numGroups: PropTypes.number,
   verboseMap: PropTypes.objectOf(PropTypes.string),
+  jsonParameter: PropTypes.string,
+  jsonParameter2: PropTypes.string,
 };
 
 function PivotTable(element, props) {
@@ -32,11 +34,49 @@ function PivotTable(element, props) {
     numberFormat,
     numGroups,
     verboseMap,
+    jsonParameter,
+    jsonParameter2,
   } = props;
 
   const { html, columns } = data;
   const container = element;
   const $container = $(element);
+
+  var forceClassName;
+  try {
+     forceClassName = jsonParameter.length > 0 ? JSON.parse(jsonParameter) : false;
+     forceClassName = forceClassName.range && forceClassName.classname && forceClassName ;
+  } catch (e) {
+     forceClassName = false;
+  }
+
+  var categoryClassname;
+  try {
+    categoryClassname = jsonParameter2.length > 0 ? JSON.parse(jsonParameter2) : false;
+    categoryClassname = categoryClassname.keys && categoryClassname.classname && categoryClassname ;
+ } catch (e) {
+    categoryClassname = false;
+ }
+
+  function getClassnameValue (val) {
+    var index = -1;
+      if (forceClassName) {
+        for(var i = 0; i < forceClassName.range.length; i++) {
+          if (i == 0) {
+            if (val < forceClassName.range[0] ) {
+              index = 0;
+              break;
+            }
+          } else {
+            if (forceClassName.range[i-1] <= val && val < forceClassName.range[i] ) {
+              index = i;
+              break;
+            }
+          }
+        }
+        return index < 0 ? forceClassName.classname[forceClassName.classname.length-1] : forceClassName.classname[index];
+      }
+  }
 
   // payload data is a string of html with a single table element
   container.innerHTML = html;
@@ -60,10 +100,25 @@ function PivotTable(element, props) {
       const format = columnFormats[metric] || numberFormat || '.3s';
       const tdText = $(this)[0].textContent;
       if (!Number.isNaN(tdText) && tdText !== '') {
+        if (tdText == 0) {
+          $(this).addClass('zero');
+        } else {
+          tdText < 0 ? $(this).addClass('col_' + i + ' negative') : $(this).addClass('col_' + i + ' positive') ;
+        }
+        // Add classname depending of the value
+        $(this).addClass(getClassnameValue(tdText));
         $(this)[0].textContent = formatNumber(format, tdText);
         $(this).attr('data-sort', tdText);
       }
     });
+  });
+
+  // Add classname depending of the Category name
+  $container.find('tr th:nth-child(1)').each(function() {
+    const index = categoryClassname.keys.indexOf($(this).html());
+    if (index > -1 ) {
+      $(this).parent().addClass(categoryClassname.classname[index]);
+    }
   });
 
   if (numGroups === 1) {
