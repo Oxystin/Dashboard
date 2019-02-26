@@ -60,9 +60,9 @@
       "description": "Use this to define a static color for all circles",
       "type": "ColorPickerControl",
       "default": {
-        "r": 0,
-        "g": 122,
-        "b": 135,
+        "r": 86,
+        "g": 86,
+        "b": 86,
         "a": 1
       },
       "renderTrigger": true
@@ -72,9 +72,9 @@
       "description": "Color of the target location",
       "type": "ColorPickerControl",
       "default": {
-        "r": 0,
-        "g": 122,
-        "b": 135,
+        "r": 86,
+        "g": 86,
+        "b": 86,
         "a": 1
       },
       "renderTrigger": true
@@ -114,9 +114,9 @@
       "description": " Set the opacity to 0 if you do not want to override the color specified in the GeoJSON",
       "type": "ColorPickerControl",
       "default": {
-        "r": 0,
-        "g": 122,
-        "b": 135,
+        "r": 86,
+        "g": 86,
+        "b": 86,
         "a": 1
       },
       "renderTrigger": true
@@ -126,9 +126,9 @@
       "description": " Set the opacity to 0 if you do not want to override the color specified in the GeoJSON",
       "type": "ColorPickerControl",
       "default": {
-        "r": 0,
-        "g": 122,
-        "b": 135,
+        "r": 86,
+        "g": 86,
+        "b": 86,
         "a": 1
       },
       "renderTrigger": true
@@ -2705,6 +2705,13 @@
       "default": false,
       "description": "Whether to align the background chart for +/- values"
     },
+    "auto_scale_negative": {
+      "type": "CheckboxControl",
+      "label": "Auto Scale Y",
+      "renderTrigger": true,
+      "default": false,
+      "description": "Auto scale Y Axis Negative Value"
+    },
     "color_pn": {
       "type": "CheckboxControl",
       "label": "Color +/-",
@@ -3348,9 +3355,9 @@
       "type": "ColorPickerControl",
       "label": "Color",
       "default": {
-        "r": 0,
-        "g": 122,
-        "b": 135,
+        "r": 86,
+        "g": 86,
+        "b": 86,
         "a": 1
       },
       "description": "Pick a color"

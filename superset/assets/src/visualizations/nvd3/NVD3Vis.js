@@ -272,6 +272,9 @@ function nvd3Vis(element, props) {
   container.innerHTML = '';
   const activeAnnotationLayers = annotationLayers.filter(layer => layer.show);
 
+  const translateControlBar = {"grouped":"Рядом","stacked":"Стопкой"}
+	const translateControlStack = {"stacked":"Стопка","stream":"Поток","expanded":"Процент"}
+
   let chart;
   let width = maxWidth;
   let colorKey = 'key';
@@ -522,7 +525,8 @@ function nvd3Vis(element, props) {
         chart = nv.models.multiBarChart()
           .showControls(showControls)
           .groupSpacing(0.1)
-          .duration(ANIMATION_TIME);
+          .duration(ANIMATION_TIME)
+          .controlLabels(translateControlBar);
 
         if (!reduceXTicks) {
           width = computeBarChartWidth(data, isBarStacked, maxWidth);
@@ -557,6 +561,7 @@ function nvd3Vis(element, props) {
           .duration(ANIMATION_TIME)
           .showControls(showControls)
           .reduceXTicks(reduceXTicks)
+          .controlLabels(translateControlBar)
           .groupSpacing(0.1); // Distance between each group of bars.
 
         chart.xAxis.showMaxMin(false);
@@ -661,6 +666,7 @@ function nvd3Vis(element, props) {
         chart.showControls(showControls);
         chart.style(areaStackedStyle);
         chart.xScale(d3.time.scale.utc());
+        chart.controlLabels(translateControlStack);
         break;
 
       case 'box_plot':
