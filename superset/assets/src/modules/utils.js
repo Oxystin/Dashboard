@@ -77,7 +77,7 @@ export function showModal(options) {
  */
 export const fixDataTableBodyHeight = function ($tableDom, height) {
   const headHeight = $tableDom.find('.dataTables_scrollHead').height();
-  const filterHeight = $tableDom.find('.dataTables_filter').height() || 0;
+  const filterHeight = $tableDom.parent().find('.dataTables_filter').height() || 0;
   const pageLengthHeight = $tableDom.find('.dataTables_length').height() || 0;
   const paginationHeight = $tableDom.find('.dataTables_paginate').height() || 0;
   const controlsHeight = (pageLengthHeight > filterHeight) ? pageLengthHeight : filterHeight;

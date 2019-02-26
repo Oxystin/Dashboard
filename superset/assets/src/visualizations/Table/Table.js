@@ -45,10 +45,15 @@ const propTypes = {
     PropTypes.string,
     PropTypes.object,
   ]),
+  chartId: PropTypes.number.isRequired,
+  clearTableFilter: PropTypes.bool,
+  clearTableElement: PropTypes.string,
 };
 
 const formatValue = getNumberFormatter(NumberFormats.INTEGER);
 const formatPercent = getNumberFormatter(NumberFormats.PERCENT_3_POINT);
+
+
 function NOOP() {}
 
 function TableVis(element, props) {
@@ -69,9 +74,37 @@ function TableVis(element, props) {
     tableFilter,
     tableTimestampFormat,
     timeseriesLimitMetric,
+    chartId,
+    clearTableFilter,
+    clearTableElement,
   } = props;
 
   const $container = $(element);
+  const id_filter = 'clear_filter_' + chartId;
+  var isFilters = false;
+  var force_event_click;
+  try {
+     force_event_click = tableFilter ? JSON.parse(clearTableElement) : false;
+  } catch (e) {
+     force_event_click = false;
+  }
+
+  function Clear_Filter_Button () {
+    if (clearTableFilter && tableFilter) {
+      isFilters = true;
+      $container.prepend('<div id="' + id_filter + '" class="clear_filter"></div>');
+      $('#' +id_filter).on( "click", function(e) {
+        const $filter_item = $container.find('td:first')
+        if ($filter_item.length>0) {
+          const key = $filter_item[0].__data__.col;
+          $filter_item.removeClass('filtered');
+          onAddFilter(key,[],false,true);
+          $('#' +id_filter).remove();
+          isFilters = false;
+        }
+      });
+    }
+  };
 
   const metrics = (rawMetrics || []).map(m => m.label || m)
     // Add percent metrics
@@ -185,14 +218,26 @@ function TableVis(element, props) {
     .on('click', function (d) {
       if (!d.isMetric && tableFilter) {
         const td = d3.select(this);
-        if (td.classed('filtered')) {
-          onRemoveFilter(d.col, [d.val]);
-          d3.select(this).classed('filtered', false);
-        } else {
-          d3.select(this).classed('filtered', true);
-          onAddFilter(d.col, [d.val]);
+        if (!(td.classed('filtered'))) {
+          table.selectAll('td').classed('filtered', false);
+          if (force_event_click && force_event_click.keys) {
+            if ( force_event_click.keys.some (k => k == d.val) ) {
+              onAddFilter(d.col,[],false,true) ;
+            } else {
+              onAddFilter(d.col, [d.val],false,true);
+              if (!isFilters) Clear_Filter_Button ();             
+            }
+          } else {
+            onAddFilter(d.col, [d.val],false,true);
+            if (!isFilters) Clear_Filter_Button ();
+          }
+          td.classed('filtered', true);
         }
       }
+    })
+    .on('dblclick', function (d) {
+      table.selectAll('td').classed('filtered', false);
+      onAddFilter(d.col, [],false,true);
     })
     .style('cursor', d => (!d.isMetric) ? 'pointer' : '')
     .html(d => d.html ? d.html : d.val);
@@ -200,6 +245,7 @@ function TableVis(element, props) {
   const paging = pageLength && pageLength > 0;
 
   const datatable = $container.find('.dataTable').DataTable({
+    dom: '<"top"i>rtp<"bottom"><"clear">',
     paging,
     pageLength,
     aaSorting: [],
@@ -209,6 +255,13 @@ function TableVis(element, props) {
     scrollCollapse: true,
     scrollX: true,
   });
+
+  if (includeSearch) {
+    $container.prepend('<input id="searchBox_' + chartId + '" class="dataTables_filter" type="text">');
+    $('#searchBox_' + chartId ).on( 'keyup click', function () {
+      datatable.search(this.value).draw();
+    });
+  }
 
   fixDataTableBodyHeight($container.find('.dataTables_wrapper'), height);
   // Sorting table by main column
@@ -233,6 +286,22 @@ function TableVis(element, props) {
     }
   }
   datatable.draw();
+
+  if ($container.find('td.filtered').length>0) {
+    Clear_Filter_Button ();
+  } else {
+    isFilters = false;
+    // clear force key
+    if (force_event_click && force_event_click.keys) {
+      const $filter_item = $container.find('td')
+      $filter_item.each(function (i,obj){
+        if (force_event_click.keys.includes(obj.__data__.val)) {
+          $(obj).addClass('filtered');
+        }
+      })
+    }
+
+  };
 }
 
 TableVis.displayName = 'TableVis';

@@ -1461,6 +1461,20 @@ export const controls = {
     description: t('Whether to apply filter when items are clicked'),
   },
 
+  clear_table_filter: {
+    type: 'CheckboxControl',
+    label: t('Clear Table Filter Control'),
+    renderTrigger: true,
+    default: false,
+    description: t('Create Clear Filter Control. Class: ".clear_filter"'),
+  },
+
+  clear_table_element: {
+    type: 'TextControl',
+    label: t('JSON clear filter key'),
+    description: t('Keys force clear filter. Example: {"keys":["key1","key2"]}'),
+  },
+
   align_pn: {
     type: 'CheckboxControl',
     label: t('Align +/-'),

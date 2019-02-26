@@ -18,6 +18,8 @@ export default function transformProps(chartProps) {
     tableFilter,
     tableTimestampFormat,
     timeseriesLimitMetric,
+    clearTableFilter,
+    clearTableElement,
   } = formData;
   const { columnFormats, verboseMap } = datasource;
   const { records, columns } = payload.data;
@@ -56,5 +58,8 @@ export default function transformProps(chartProps) {
     tableFilter,
     tableTimestampFormat,
     timeseriesLimitMetric,
+    chartId:formData.sliceId,
+    clearTableFilter,
+    clearTableElement,
   };
 }

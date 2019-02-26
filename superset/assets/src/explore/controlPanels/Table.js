@@ -32,13 +32,21 @@ export default {
       ],
     },
     {
+      label: t('Advanced'),
+      expanded: false,
+      controlSetRows: [
+        ['clear_table_element'],
+      ],
+    },
+    {
       label: t('Options'),
       expanded: true,
       controlSetRows: [
         ['table_timestamp_format'],
         ['page_length', null],
-        ['include_search', 'table_filter'],
+        ['include_search', null],
         ['align_pn', 'color_pn'],
+        ['table_filter','clear_table_filter'],
       ],
     },
   ],
