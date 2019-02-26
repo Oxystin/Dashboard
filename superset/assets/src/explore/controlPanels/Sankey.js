@@ -17,6 +17,7 @@ export default {
       expanded: true,
       controlSetRows: [
         ['color_scheme'],
+        ['number_format'],
       ],
     },
   ],

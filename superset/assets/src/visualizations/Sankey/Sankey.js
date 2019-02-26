@@ -15,9 +15,9 @@ const propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   colorScheme: PropTypes.string,
+  numberFormat: PropTypes.string,
 };
 
-const formatNumber = getNumberFormatter(NumberFormats.FLOAT);
 
 function Sankey(element, props) {
   const {
@@ -25,6 +25,7 @@ function Sankey(element, props) {
     width,
     height,
     colorScheme,
+    numberFormat,
   } = props;
 
   const div = d3.select(element);
@@ -36,6 +37,8 @@ function Sankey(element, props) {
   };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
+
+  const formatNumber = getNumberFormatter(numberFormat);
 
   div.selectAll('*').remove();
   const svg = div.append('svg')
@@ -77,7 +80,7 @@ function Sankey(element, props) {
     let html;
 
     if (d.sourceLinks) { // is node
-      html = d.name + " Value: <span class='emph'>" + formatNumber(d.value) + '</span>';
+      html = d.name + ": <span class='emph'>" + formatNumber(d.value) + '</span>';
     } else {
       const val = formatNumber(d.value);
       const sourcePercent = d3.round((d.value / d.source.value) * 100, 1);
@@ -86,12 +89,12 @@ function Sankey(element, props) {
       html = [
         "<div class=''>Path Value: <span class='emph'>", val, '</span></div>',
         "<div class='percents'>",
+        d.source.name, ' (',
         "<span class='emph'>",
-        (isFinite(sourcePercent) ? sourcePercent : '100'),
-        '%</span> of ', d.source.name, '<br/>',
-        "<span class='emph'>" +
-        (isFinite(targetPercent) ? targetPercent : '--') +
-        '%</span> of ', d.target.name, 'target',
+        (isFinite(sourcePercent) ? sourcePercent : '--'), '%</span>', 
+        ') → ', d.target.name, ' (',
+        "<span class='emph'>",
+        (isFinite(targetPercent) ? targetPercent : '--'), '%</span> )',
         '</div>',
       ].join('');
     }
