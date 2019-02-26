@@ -15,7 +15,7 @@ import {
   GRID_GUTTER_SIZE,
 } from '../../util/constants';
 
-const CHART_MARGIN = 32;
+const CHART_MARGIN = 16;
 
 const propTypes = {
   id: PropTypes.string.isRequired,
