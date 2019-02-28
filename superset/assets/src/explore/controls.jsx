@@ -1616,6 +1616,14 @@ export const controls = {
     description: t('Fill background widget'),
   },
 
+  render_without_header: {
+    type: 'CheckboxControl',
+    label: t('No header'),
+    renderTrigger: true,
+    default: false,
+    description: t('Render chart without widget header'),
+  },
+  
   scale_y: {
     type: 'SelectControl',
     renderTrigger: true,

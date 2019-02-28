@@ -17,7 +17,7 @@ export default {
         ['subheader'],
         ['y_axis_format'],
         ['steps'],
-        ['fill_background'],
+        ['fill_background', 'render_without_header'],
       ],
     },
   ],

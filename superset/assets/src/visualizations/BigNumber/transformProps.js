@@ -23,6 +23,7 @@ export default function transformProps(chartProps) {
     showPerc,
     selectChart,
     steps,
+    renderWithoutHeader,
   } = formData;
   const { data } = payload;
 
@@ -118,7 +119,7 @@ export default function transformProps(chartProps) {
 
   return {
     width,
-    height,
+    height: renderWithoutHeader ? height + 30 : height,
     bigNumber,
     className,
     formatBigNumber: formatValue,
@@ -132,5 +133,6 @@ export default function transformProps(chartProps) {
     showPerc,
     selectChart,
     compareLag,
+    renderWithoutHeader,
   };
 }
