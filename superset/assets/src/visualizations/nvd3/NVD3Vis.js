@@ -265,6 +265,7 @@ function nvd3Vis(element, props) {
     scaleY2,
     autoScaleNegative,
     steps,
+    chartid,
   } = props;
 
   const isExplore = document.querySelector('#explorer-container') !== null;
@@ -1032,7 +1033,13 @@ function nvd3Vis(element, props) {
         .call(chart);
 
       // on scroll, hide tooltips. throttle to only 4x/second.
-      window.addEventListener('scroll', throttle(() => hideTooltips(element), 250));
+      //window.addEventListener('scroll', throttle(() => hideTooltips(element), 250));
+
+      // on scroll, hide tooltips. 
+      d3.select(window).on("scroll." + chartid, function() {
+        chart.tooltip.hidden(true);
+        chart.interactiveLayer.tooltip.hidden(true);
+      });
 
       // The below code should be run AFTER rendering because chart is updated in call()
       if (isTimeSeries && activeAnnotationLayers.length > 0) {

@@ -60,6 +60,7 @@ export default function transformProps(chartProps) {
     scaleY2,
     autoScaleNegative,
     steps,
+    sliceId,
   } = formData;
 
   const rawData = payload.data || [];
@@ -124,5 +125,6 @@ export default function transformProps(chartProps) {
     scaleY2,
     autoScaleNegative,
     steps,
+    chartid: sliceId,
   };
 }
