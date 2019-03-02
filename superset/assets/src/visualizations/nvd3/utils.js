@@ -69,6 +69,7 @@ export function drawBarValues(svg, chart, data, stacked, axisFormat) {
     const dy_negative = -dy_positive * 2.5;
     
     const groupLabels = svg.select('g.nv-barsWrap').append('g');
+    RemoveTotalBarValues (svg);
 
     if (stacked) {
       const PosNeg = [totalStackedValues.some(d => d[0] > 0), totalStackedValues.some(d => d[1] < 0)]
