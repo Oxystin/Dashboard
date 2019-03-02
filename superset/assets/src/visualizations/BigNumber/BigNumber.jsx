@@ -120,7 +120,11 @@ class BigNumberVis extends React.PureComponent {
           color: fillcolor,
         }}
       >
-        <span>{text}</span>
+        <span
+          style={{
+            lineHeight: maxHeight + 'px',
+          }}
+        >{text}</span>
       </div>
     );
   }
@@ -151,7 +155,11 @@ class BigNumberVis extends React.PureComponent {
           color: fillcolor,
         }}
       >
-        {subheader}
+      <span
+        style={{
+            lineHeight: maxHeight + 'px',
+          }}
+        >{subheader}</span>
       </div>
     );
   }
