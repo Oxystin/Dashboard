@@ -29,6 +29,7 @@ function CountryMap(element, props) {
     linearColorScheme,
     mapBaseUrl = '/static/assets/src/visualizations/CountryMap/countries',
     numberFormat,
+    metric_name,
   } = props;
 
   const container = element;
@@ -60,20 +61,11 @@ function CountryMap(element, props) {
   const g = svg.append('g');
   const mapLayer = g.append('g')
     .classed('map-layer', true);
-  const textLayer = g.append('g')
-    .classed('text-layer', true)
-    .attr('transform', `translate(${xd}, ${yd})`);
-  const bigText = textLayer.append('text')
-    .classed('big-text', true)
-    .style('font-size', fontSize);
-  const resultText = textLayer.append('text')
-    .classed('result-text', true)
-    .attr('dy', '1em');
 
   let centered;
 
   const clicked = function (d) {
-    const hasCenter = d && centered !== d;
+    const hasCenter = !centered;
     let x;
     let y;
     let k;
@@ -96,15 +88,10 @@ function CountryMap(element, props) {
     g.transition()
       .duration(750)
       .attr('transform', `translate(${halfWidth},${halfHeight})scale(${k})translate(${-x},${-y})`);
-    textLayer.transition()
-      .duration(750)
-      .attr('transform', `translate(0,0)translate(${hasCenter ? (x) : xd},${hasCenter ? (y + 18) : yd})`)
-    bigText.transition()
-      .duration(750)
-      .style('font-size', hasCenter ? 6 : fontSize);
-    resultText.transition()
-      .duration(750)
-      .style('font-size', hasCenter ? 16 : 24);
+
+    mapLayer.select('g.map-label').transition().duration(750)
+    .style("opacity", hasCenter ? 1 : 0);
+
   };
 
   backgroundRect.on('click', clicked);
@@ -118,31 +105,43 @@ function CountryMap(element, props) {
         name = feature.properties.NAME_1;
       }
     }
-    bigText.text(name);
+    return name;
   };
 
-  const updateMetrics = function (region) {
-    if (region.length > 0) {
-      resultText.text(format(region[0].metric));
-    }
-  };
+  const tooltip = div.append('div')
+    .attr('class', 'map-tooltip')
+    .style('opacity', 0);
+
+
+  function getTooltipHtml(d) {
+    const iso = data.filter(region => region.country_id === d.properties.ISO);
+    const result = iso.length > 0 ? format(iso[0].metric) : '--';
+    const gg = props;
+    let html;
+    html = [
+      "<div class='maps_region'>", "<span>", selectAndDisplayNameOfRegion(d),"</span>", "</div>",
+      "<div class='maps_result'>", "<span>", metric_name, ":</span> <span class='maps_metric'>", result , "</span>", "</div>"
+    ].join('');
+    return html;
+  }
 
   const mouseenter = function (d) {
-    // Darken color
-    let c = colorFn(d);
-    if (c !== 'none') {
-      c = d3.rgb(c).darker().toString();
-    }
-    d3.select(this).style('fill', c);
-    selectAndDisplayNameOfRegion(d);
-    const result = data.filter(region => region.country_id === d.properties.ISO);
-    updateMetrics(result);
+
+    const x = d3.event.offsetX + 10;
+    const y = d3.event.offsetY - 40;
+
+    tooltip
+      .html(function () { return getTooltipHtml(d); })
+      .transition()
+      .duration(300)
+      .style('left', x + 'px')
+      .style('top', y + 'px')
+      .style('opacity', 0.8);
+
   };
 
   const mouseout = function () {
-    d3.select(this).style('fill', colorFn);
-    bigText.text('');
-    resultText.text('');
+
   };
 
   function drawMap(mapData) {
@@ -180,7 +179,27 @@ function CountryMap(element, props) {
       .on('mouseenter', mouseenter)
       .on('mouseout', mouseout)
       .on('click', clicked);
-  }
+
+    // Add a text label.
+    mapLayer.append('g')
+    .style('fill', 'white')
+    .style('stroke', 'none')
+    .style("font-size", "2.5px")    
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .classed('map-label',true)
+    .attr('text-anchor', 'middle')
+    .selectAll('text')
+    .data(features)
+    .enter().append('text')
+    .attr("x", d => path.centroid(d)[0])
+    .attr("y",  d => path.centroid(d)[1] + 1)
+    .text(function(d,i) {
+      const iso = data.filter(region => region.country_id === d.properties.ISO);
+      return iso.length > 0 ? format(iso[0].metric) : '';
+    });
+
+}
 
   const countryKey = country.toLowerCase();
   const map = maps[countryKey];

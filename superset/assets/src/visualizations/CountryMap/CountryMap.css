@@ -39,3 +39,20 @@
   cursor: pointer;
   stroke: #eee;
 }
+
+.country_map .map-tooltip {
+  position: absolute;
+  width: auto;
+  background: #ddd;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 200;
+  color: #333;
+  border: 1px solid #fff;
+  text-align: center;
+  pointer-events: none;
+}
+
+.country_map span.maps_metric {
+  font-weight: bold;
+}
