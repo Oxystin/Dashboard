@@ -132,13 +132,6 @@ AUTH_USER_REGISTRATION = True
 # The default user self registration role
 AUTH_USER_REGISTRATION_ROLE = "Gamma"
 
-# When using LDAP Auth, setup the ldap server
-AUTH_LDAP_SERVER = "ldap://ldap-slave3.msk.mts.ru"
-AUTH_LDAP_BIND_USER = "UID=SA0001mtsdashadmin,OU=TechUsers,OU=People,DC=mts,DC=ru"
-AUTH_LDAP_USE_TLS = False
-AUTH_LDAP_SEARCH = "DC=mts,DC=ru"
-AUTH_LDAP_BIND_PASSWORD = "ohNg4chi"
-
 # Uncomment to setup OpenID providers example for OpenID authentication
 # OPENID_PROVIDERS = [
 #    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
@@ -437,14 +430,7 @@ FLASK_APP_MUTATOR = None
 ENABLE_ACCESS_REQUEST = False
 
 # smtp server configuration
-EMAIL_NOTIFICATIONS = True  # all the emails are sent using dryrun
-SMTP_HOST = 'mail.inside.mts.ru'
-SMTP_STARTTLS = True
-SMTP_SSL = False
-SMTP_USER = 'mts-dashboard@mts.ru'
-SMTP_PORT = 25
-SMTP_PASSWORD = 'ep8Jfu9w'
-SMTP_MAIL_FROM = 'mts-dashboard@mts.ru'
+EMAIL_NOTIFICATIONS = False  # all the emails are sent using dryrun
 
 if not CACHE_DEFAULT_TIMEOUT:
     CACHE_DEFAULT_TIMEOUT = CACHE_CONFIG.get('CACHE_DEFAULT_TIMEOUT')
