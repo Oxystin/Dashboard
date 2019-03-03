@@ -17,6 +17,7 @@ export default {
       controlSetRows: [
         ['select_country', 'number_format'],
         ['linear_color_scheme'],
+        ['order_desc'],
       ],
     },
   ],
@@ -31,6 +32,12 @@ export default {
     },
     linear_color_scheme: {
       renderTrigger: true,
+    },
+    order_desc: {
+      label: t('Inverse Color Scheme'),
+      renderTrigger: true,
+      default: false,
+      description: t('Inverse Color Scheme'),
     },
   },
 };

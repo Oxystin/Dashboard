@@ -5,6 +5,7 @@ export default function transformProps(chartProps) {
     linearColorScheme,
     numberFormat,
     selectCountry,
+    orderDesc,
   } = formData;
 
   const name = datasource.verboseMap[metric];
@@ -17,5 +18,6 @@ export default function transformProps(chartProps) {
     linearColorScheme,
     numberFormat,
     metric_name: datasource.verboseMap[metric] || metric.label || 'Metric',
+    orderDesc,
   };
 }

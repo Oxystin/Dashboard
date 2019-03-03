@@ -30,12 +30,13 @@ function CountryMap(element, props) {
     mapBaseUrl = '/static/assets/src/visualizations/CountryMap/countries',
     numberFormat,
     metric_name,
+    orderDesc,
   } = props;
 
   const container = element;
   const format = getNumberFormatter(numberFormat);
   const gradient = getSequentialSchemeRegistry().get(linearColorScheme);
-  const colorScale = gradient ? gradient.createLinearScale(d3Extent(data, v => v.metric)) : getSequentialSchemeRegistry().get('black_white').createLinearScale(d3Extent(data, v => v.metric));
+  const colorScale = gradient ? gradient.createLinearScale(orderDesc ? d3Extent(data, v => v.metric).reverse() : d3Extent(data, v => v.metric)) : getSequentialSchemeRegistry().get('black_white').createLinearScale(orderDesc ? d3Extent(data, v => v.metric).reverse() : d3Extent(data, v => v.metric));
   const colorMap = {};
   data.forEach((d) => {
     colorMap[d.country_id] = colorScale(d.metric);
@@ -76,7 +77,7 @@ function CountryMap(element, props) {
       const centroid = path.centroid(d);
       x = centroid[0];
       y = centroid[1];
-      k = 4;
+      k = 6;
       centered = d;
     } else {
       x = halfWidth;
@@ -133,7 +134,7 @@ function CountryMap(element, props) {
     tooltip
       .html(function () { return getTooltipHtml(d); })
       .transition()
-      .duration(300)
+      .duration(100)
       .style('left', x + 'px')
       .style('top', y + 'px')
       .style('opacity', 0.8);
@@ -141,7 +142,9 @@ function CountryMap(element, props) {
   };
 
   const mouseout = function () {
-
+    tooltip.transition()
+    .duration(300)
+    .style('opacity', 0);
   };
 
   function drawMap(mapData) {
@@ -184,7 +187,7 @@ function CountryMap(element, props) {
     mapLayer.append('g')
     .style('fill', 'white')
     .style('stroke', 'none')
-    .style("font-size", "2.5px")    
+    .style("font-size", "1.8px")    
     .style("pointer-events", "none")
     .style("opacity", 0)
     .classed('map-label',true)
