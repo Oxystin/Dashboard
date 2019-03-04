@@ -59,7 +59,7 @@ function Sunburst(element, props) {
   const visHeight = containerHeight - margin.top - margin.bottom - breadcrumbHeight;
   const radius = Math.min(visWidth, visHeight) / 2;
   // 3 levels of text if inner-most level, 4 otherwise
-  const yOffsets = ['-30', '5', '32', '59', '86'];
+  const yOffsets = ['-25', '0', '22', '44', '66'];
   const indicator = compareSuffix && compareSuffix !='' ? compareSuffix : metricLabel(metrics[1]) + '/' + metricLabel(metrics[0]);
 
   let colorByCategory = true; // color by category if primary/secondary metrics match
