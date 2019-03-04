@@ -217,17 +217,17 @@ export default class AdhocMetricEditPopover extends React.Component {
           onSelect={this.refreshAceEditor}
           animation={false}
         >
-          <Tab className="adhoc-metric-edit-tab" eventKey={EXPRESSION_TYPES.SIMPLE} title="Simple">
+          <Tab className="adhoc-metric-edit-tab" eventKey={EXPRESSION_TYPES.SIMPLE} title="Простой запрос">
             <FormGroup>
-              <ControlLabel><strong>column</strong></ControlLabel>
+              <ControlLabel><strong>Поле:</strong></ControlLabel>
               <OnPasteSelect {...this.selectProps} {...columnSelectProps} />
             </FormGroup>
             <FormGroup>
-              <ControlLabel><strong>aggregate</strong></ControlLabel>
+              <ControlLabel><strong>Агрегатная функция:</strong></ControlLabel>
               <OnPasteSelect autoFocus {...this.selectProps} {...aggregateSelectProps} />
             </FormGroup>
           </Tab>
-          <Tab className="adhoc-metric-edit-tab" eventKey={EXPRESSION_TYPES.SQL} title="Custom SQL">
+          <Tab className="adhoc-metric-edit-tab" eventKey={EXPRESSION_TYPES.SQL} title="Пользовательский SQL">
             {
               this.props.datasourceType !== 'druid' ?
                 <FormGroup>

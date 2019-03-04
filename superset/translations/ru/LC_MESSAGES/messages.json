@@ -920,7 +920,7 @@
             "Редактировать график"
          ],
          "Export CSV": [
-            "Export CSV"
+            "Экспорт CSV"
          ],
          "Explore chart": [
             "Обзор графика"
@@ -3126,6 +3126,117 @@
          ],
          "Changed on": [
             "Изменено"
+         ],
+         "Tabs": [
+            "Вкладки"
+         ],
+         "Row": [
+            "Строка"
+         ],
+         "Header": [
+            "Заголовок"
+         ],
+         "Divider": [
+            "Разделитель"
+         ],
+         "Your charts & filters": [
+            "Ваши Графики и Фильтры"
+         ],
+         "Your charts and filters": [
+            "Ваши Графики и Фильтры"
+         ],
+         "Insert components": [
+            "Вставить компоненты"
+         ],
+         "Hide components": [
+            "Скрыть компоненты"
+         ],
+         "Switch to view mode": [
+            "Режим просмотра"
+         ],
+         "Edit dashboard": [
+            "Редактировать"
+         ],
+         "Force refresh": [
+            "Oбновить"
+         ],
+         "Edit chart metadata": [
+            "Изменить метаданные"
+         ],
+         "Basic": [
+            "Основные"
+         ],
+         "Datasource Editor for ": [
+            "Редактор источников данных для "
+         ],
+         "Settings": [
+            "Настройки"
+         ],
+         "Calculated Columns": [
+            "Расчетные столбцы"
+         ],
+         "Default URL": [
+            "URL по умолчанию"
+         ],
+         "Default URL to redirect to when accessing from the datasource list page": [
+            "URL-адрес для перенаправления при доступе со страницы списка источников данных"
+         ],
+         "Autocomplete filters": [
+            "Автозаполнение фильтров"
+         ],
+         "Whether to populate autocomplete filters options": [
+            "Автозаполнение параметров фильтров"
+         ],
+         "When specifying SQL, the datasource acts as a view. Superset will use this statement as a subquery while grouping and filtering on the generated parent queries.": [
+            "При указании SQL источник данных выступает в качестве представления. SQL будет использоваться в качестве подзапроса к родительскому запросу."
+         ],
+         "The duration of time in seconds before the cache is invalidated": [
+            "Продолжительность времени в секундах до того, как кэш будет признан недействительным"
+         ],
+         "Hours offset": [
+            "Смещение часов"
+         ],
+         "Data": [
+            "Данные"
+         ],
+         "Visual Properties": [
+            "Вид диаграммы"
+         ],
+         "Time range": [
+            "Временной диапазон"
+         ],
+         "Owner of the datasource": [
+            "Владелец источника данных"
+         ],
+         "Simple": [
+            "Простой"
+         ],
+         "Custom SQL": [
+            "Пользовательский SQL"
+         ],
+         "column": [
+            "колонка"
+         ],
+         "aggregate": [
+            "агрегатная функция"
+         ],
+         "rows": [
+            "строк"
+         ],
+         "View query": [
+            "Посмотреть запрос"
+         ],
+         "View results": [
+            "Посмотреть результат"
+         ],
+         "View samples": [
+            "Посмотреть исходник"
+         ],
+         "Run in SQL Lab": [
+            "Запустить в SQL Lab"
+         ],
+         "cached": [
+            "данные в кэше"
          ],
          "Saved Queries": [
             "Сохраненные запросы"
