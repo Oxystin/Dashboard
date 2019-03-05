@@ -20,7 +20,7 @@ d3.time.format = RU.timeFormat;
 d3.format = RU.numberFormat;
 
 export function d3LocaleTimeFormat (format) {
-  if (format === 'smart_date') {
+  if (format === 'smart_date' || !format) {
     format = '%m/%y';
   } 
   const f = d3.time.format(format);

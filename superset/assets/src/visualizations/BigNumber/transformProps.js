@@ -2,6 +2,7 @@ import * as color from 'd3-color';
 import { getNumberFormatter, NumberFormats} from '@superset-ui/number-format';
 import { renderTooltipFactory } from './BigNumber';
 import { getTimeFormatter} from '@superset-ui/time-format';
+import { d3LocaleTimeFormat } from '../localeformat';
 
 const TIME_COLUMN = '__timestamp';
 
@@ -115,7 +116,7 @@ export default function transformProps(chartProps) {
   }
 
   const formatValue = getNumberFormatter(yAxisFormat);
-  const formatTime = getTimeFormatter(dateTimeFormat);
+  const formatTime = d3LocaleTimeFormat(dateTimeFormat);
 
   return {
     width,
