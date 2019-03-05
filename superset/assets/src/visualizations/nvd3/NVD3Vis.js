@@ -9,6 +9,7 @@ import { CategoricalColorNamespace } from '@superset-ui/color';
 import { getNumberFormatter, formatNumber, NumberFormats } from '@superset-ui/number-format';
 import { getTimeFormatter, smartDateVerboseFormatter } from '@superset-ui/time-format';
 import 'nvd3/build/nv.d3.min.css';
+import { d3LocaleTimeFormat } from '../localeformat';
 
 import ANNOTATION_TYPES, { applyNativeColumns } from '../../modules/AnnotationTypes';
 import { isTruthy } from '../../utils/common';
@@ -40,38 +41,6 @@ import {
   stringOrObjectWithLabelType,
 } from './PropTypes';
 import './NVD3Vis.css';
-
-// -------------- RU LOCALISATION START---------------------
-var RU = d3.locale({
-  "decimal": ".",
-  "thousands": " ",
-  "grouping": [3],
-  "currency": ["₽", ""],
-  "dateTime": "%A, %e %B %Y г.",
-  "date": "%d.%m.%Y",
-  "time": "%H:%M:%S",
-  "periods": ["AM", "PM"],
-  "days": ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],
-  "shortDays": ["вс", "пн", "вт", "ср", "чт", "пт", "сб"],
-  "months": ["1Q", "1Q", "1Q", "2Q", "2Q", "2Q", "3Q", "3Q", "3Q", "4Q", "4Q", "4Q"],
-  "shortMonths": ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
-});
-
-d3.time.format = RU.timeFormat;
-d3.format = RU.numberFormat;
-
-const d3TimeFormatPreset = function (format) {
-  if (format === 'smart_date') {
-    format = '%m/%y';
-  } 
-  const f = d3.time.format(format);
-  return function (dttm) {
-    const d = new Date(dttm);
-    return f(d);
-  };
-};
-
-// -------------- RU LOCALISATION END ---------------------
 
 const { getColor, getScale } = CategoricalColorNamespace;
 
@@ -266,6 +235,7 @@ function nvd3Vis(element, props) {
     autoScaleNegative,
     steps,
     chartid,
+    tooltipProportion,
   } = props;
 
   const isExplore = document.querySelector('#explorer-container') !== null;
@@ -731,7 +701,7 @@ function nvd3Vis(element, props) {
 
     let xAxisFormatter;
     if (isTimeSeries) {
-      xAxisFormatter = d3TimeFormatPreset(xAxisFormat);
+      xAxisFormatter = d3LocaleTimeFormat(xAxisFormat);
       // In tooltips, always use the verbose time format
       //chart.interactiveLayer.tooltip.headerFormatter(smartDateVerboseFormatter);
     } else {
@@ -782,7 +752,7 @@ function nvd3Vis(element, props) {
       chart.useInteractiveGuideline(true);
       if (vizType === 'line') {
         chart.interactiveLayer.tooltip.contentGenerator(d =>
-          generateRichLineTooltipContent(d, xAxisFormatter, yAxisFormatter));
+          generateRichLineTooltipContent(d, xAxisFormatter, yAxisFormatter, tooltipProportion));
       }
     }
 

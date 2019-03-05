@@ -139,9 +139,17 @@ export function RemoveTotalBarValues (svg) {
 
 // Custom sorted tooltip
 // use a verbose formatter for times
-export function generateRichLineTooltipContent(d, timeFormatter, valueFormatter) {
+export function generateRichLineTooltipContent(d, timeFormatter, valueFormatter, proportion) {
   let tooltip = '';
+  let total = 0;
   const xvalue = (typeof d.value === 'string') ? d.value : timeFormatter(d.value);
+  const percentFormat = getNumberFormatter(',.1%');
+  if (proportion) {
+    total = d.series.reduce(function(sum, current) {
+      return sum + current.value;
+    }, 0);
+    proportion = (total == 0) ? false : proportion;
+  }
   tooltip += "<table><thead><tr><td colspan='3'>"
     + `<strong class='x-value'>${xvalue}</strong>`
     + '</td></tr></thead><tbody>';
@@ -155,11 +163,14 @@ export function generateRichLineTooltipContent(d, timeFormatter, valueFormatter)
           '></div>' +
         '</td>' +
         `<td>${dompurify.sanitize(series.key)}</td>` +
-        `<td>${valueFormatter(series.value)}</td>` +
-      '</tr>'
+        `<td>${valueFormatter(series.value)}</td>`
     );
+    if (proportion) {
+      tooltip += (`<td>${percentFormat(series.value/total)}</td>`);
+    }
+
   });
-  tooltip += '</tbody></table>';
+  tooltip += '</tr></tbody></table>';
   return tooltip;
 }
 

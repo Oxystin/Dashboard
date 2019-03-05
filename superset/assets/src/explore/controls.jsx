@@ -1717,6 +1717,14 @@ export const controls = {
     'point in time'),
   },
 
+  tooltip_proportion: {
+    type: 'CheckboxControl',
+    label: t('Show Proportion'),
+    renderTrigger: true,
+    default: false,
+    description: t('Show Proportion in Tooltip'),
+  },
+
   y_log_scale: {
     type: 'CheckboxControl',
     label: t('Y Log Scale'),

@@ -11,8 +11,10 @@ export default {
       expanded: true,
       controlSetRows: [
         ['color_scheme'],
-        ['show_brush', 'send_time_range', 'show_legend'],
-        ['rich_tooltip', 'show_markers'],
+        ['show_brush'],
+        ['send_time_range', 'show_legend'],
+        ['rich_tooltip', 'tooltip_proportion'],
+        ['show_markers', null],
         ['line_interpolation'],
       ],
     },

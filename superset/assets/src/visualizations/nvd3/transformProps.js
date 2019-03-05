@@ -61,6 +61,7 @@ export default function transformProps(chartProps) {
     autoScaleNegative,
     steps,
     sliceId,
+    tooltipProportion,
   } = formData;
 
   const rawData = payload.data || [];
@@ -126,5 +127,6 @@ export default function transformProps(chartProps) {
     autoScaleNegative,
     steps,
     chartid: sliceId,
+    tooltipProportion,
   };
 }
