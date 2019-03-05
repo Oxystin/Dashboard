@@ -3238,6 +3238,24 @@
          "cached": [
             "данные в кэше"
          ],
+         "Force refresh dashboard": [
+            "Принудительное обновление"
+         ],
+         "Set auto-refresh interval": [
+            "Установить интервал обновления"
+         ],
+         "Share dashboard": [
+            "Поделиться отчетом"
+         ],
+         "Confirm save": [
+            "Подтвердить сохранение"
+         ],
+         "Are you sure you want to save and apply changes?": [
+            "Вы уверены, что хотите сохранить и применить изменения?"
+         ],
+         "The data source configuration exposed here affects all the charts using this datasource. Be mindful that changing settings here may affect other charts in undesirable ways.": [
+            "Представленная здесь конфигурация влияет на все диаграммы, использующие этот источник данных. Помните, что изменение настроек может повлиять на другие графики нежелательным образом."
+         ],
          "Saved Queries": [
             "Сохраненные запросы"
          ]
