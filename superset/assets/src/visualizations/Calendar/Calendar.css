@@ -4,7 +4,25 @@
   overflow: auto !important;
 }
 
+.cal-heatmap-container, .cal-heatmap-container svg {
+  overflow: visible !important;
+}
+
 .cal_heatmap .ch-tooltip {
   margin-left: 20px;
   margin-top: 5px;
+}
+
+.cal_heatmap .graph-subdomain-group rect {
+  stroke:grey;
+  stroke-width:1;
+}
+
+.cal_heatmap .graph-legend {
+  padding:10px;
+}
+
+.cal_heatmap .graph-legend rect {
+  stroke:grey;
+  stroke-width:1;
 }

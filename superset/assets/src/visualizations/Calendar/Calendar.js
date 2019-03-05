@@ -8,6 +8,7 @@ import CalHeatMap from '../../../vendor/cal-heatmap/cal-heatmap';
 import { UTC } from '../../modules/dates';
 import '../../../vendor/cal-heatmap/cal-heatmap.css';
 import './Calendar.css';
+import { d3LocaleTimeFormat } from '../localeformat';
 
 const UTCTS = uts => UTC(new Date(uts)).getTime();
 
@@ -58,7 +59,7 @@ function Calendar(element, props) {
   } = props;
 
   const valueFormatter = getNumberFormatter(valueFormat);
-  const timeFormatter = getTimeFormatter(timeFormat);
+  const timeFormatter = d3LocaleTimeFormat(timeFormat);
 
   const container = d3Select(element)
     .style('height', height);
@@ -125,6 +126,13 @@ function Calendar(element, props) {
       valueFormatter,
       timeFormatter,
       subDomainTextFormat,
+      domainMargin: 5,
+      legendMargin: [0, 0, 0, 5],
+      domainGutter: 2,
+      domainDynamicDimension: false,
+      label: {
+        position: "top"
+      },
     });
   });
 }
