@@ -107,9 +107,9 @@ export default function transformProps(chartProps) {
   }
 
   let className = '';
-  if (percentChange > 0) {
+  if (bigNumber > 0) {
     className = 'positive';
-  } else if (percentChange < 0) {
+  } else if (bigNumber < 0) {
     className = 'negative';
     mainColor = NegativeColor;
   }
