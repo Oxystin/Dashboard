@@ -471,7 +471,7 @@ function nvd3Vis(element, props) {
         chart.dispatch.on('renderEnd', function(){
           Custom_Style_Lines(svg, data);
           if (showMarkers) {
-            svg.selectAll('.nv-point')
+            svg.selectAll('.nv-point').filter((d) => d[0].y !== null)
             .style('stroke-opacity', 1)
             .style('fill-opacity', 1);
           }
@@ -810,7 +810,7 @@ function nvd3Vis(element, props) {
 
         [chart.bars1, chart.bars2].forEach(function(bar){
           bar.dispatch.on('renderEnd', function(e){
-            svg.selectAll('.nv-point')
+            svg.selectAll('.nv-point').filter((d) => d[0].y !== null)
             .style('stroke-opacity', 1)
             .style('fill-opacity', 1);
     
@@ -896,7 +896,7 @@ function nvd3Vis(element, props) {
     }
 
     if (showMarkers) {
-      svg.selectAll('.nv-point')
+      svg.selectAll('.nv-point').filter((d) => d[0].y !== null)
         .style('stroke-opacity', 1)
         .style('fill-opacity', 1);
     }
