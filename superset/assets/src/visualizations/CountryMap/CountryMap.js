@@ -128,8 +128,9 @@ function CountryMap(element, props) {
 
   const mouseenter = function (d) {
 
-    const x = d3.event.offsetX + 10;
     const y = d3.event.offsetY - 40;
+    const halfWidth = width / 2;
+    const x = d3.event.offsetX > halfWidth ?  d3.event.offsetX - Math.floor(width/4) : d3.event.offsetX + 10;
 
     tooltip
       .html(function () { return getTooltipHtml(d); })
