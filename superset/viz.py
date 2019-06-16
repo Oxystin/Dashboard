@@ -1699,6 +1699,30 @@ class ChordViz(BaseViz):
             'matrix': m,
         }
 
+class RadarViz(BaseViz):
+
+    """A Chord diagram"""
+
+    viz_type = 'radar'
+    verbose_name = _('Radar Chart')
+    credits = '<a href=https://www.visualcinnamon.com/>Nadieh Bremer, Data Viz Expert</a>'
+    is_timeseries = False
+
+    def get_data(self, df):
+        fd = self.form_data
+        metrics = fd.get('metrics')
+        groupby = fd.get('groupby')
+        results = []
+        for metric in metrics:
+            if not isinstance(metric,str):
+                metric = metric.get('label')
+
+            d = [{
+                'axis': row[groupby[0]],
+                'value': row[metric]} for index, row in df.iterrows()
+            ]
+            results.append(dict(name=metric, values=d))
+        return results
 
 class CountryMapViz(BaseViz):
 

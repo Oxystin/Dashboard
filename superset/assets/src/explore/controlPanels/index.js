@@ -53,6 +53,7 @@ import DeckPath from './DeckPath';
 import DeckPolygon from './DeckPolygon';
 import DeckScatter from './DeckScatter';
 import DeckScreengrid from './DeckScreengrid';
+import Radar from './Radar';
 
 export const controlPanelConfigs = {
   area: Area,
@@ -103,6 +104,7 @@ export const controlPanelConfigs = {
   deck_polygon: DeckPolygon,
   deck_scatter: DeckScatter,
   deck_screengrid: DeckScreengrid,
+  radar: Radar,
 
 };
 

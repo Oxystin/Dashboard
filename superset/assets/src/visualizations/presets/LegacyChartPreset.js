@@ -20,6 +20,7 @@ import ParallelCoordinatesChartPlugin from '../ParallelCoordinates/ParallelCoord
 import RoseChartPlugin from '../Rose/RoseChartPlugin';
 import SankeyChartPlugin from '../Sankey/SankeyChartPlugin';
 import TimePivotChartPlugin from '../nvd3/TimePivot/TimePivotChartPlugin';
+import RadarChartPlugin from '../Radar/RadarChartPlugin';
 
 export default class LegacyChartPreset extends Preset {
   constructor() {
@@ -49,6 +50,7 @@ export default class LegacyChartPreset extends Preset {
         new RoseChartPlugin().configure({ key: 'rose' }),
         new SankeyChartPlugin().configure({ key: 'sankey' }),
         new TimePivotChartPlugin().configure({ key: 'time_pivot' }),
+        new RadarChartPlugin().configure({ key: 'radar' }),
       ],
     });
   }

@@ -2419,5 +2419,66 @@ export const controls = {
     description: t('Whether to normalize the histogram'),
     default: false,
   },
+
+  radar_scale: {
+    type: 'SelectControl',
+    label: t('Radius Scale'),
+    choices: formatSelectOptions(['min', 'middle', 'max']),
+    renderTrigger: true,
+    default: 'max',
+    description: t('Radius Scale'),
+  },
+
+  radar_fill_area: {
+    type: 'CheckboxControl',
+    label: t('Fill Area'),
+    default: true,
+    renderTrigger: true,
+    description: t('The opacity of the area of the blob'),
+  },
+
+  radar_line_smooth: {
+    type: 'CheckboxControl',
+    label: t('Line Smooth'),
+    default: true,
+    renderTrigger: true,
+    description: t('Area and stroke will follow a round path (cardinal-closed)'),
+  },
+
+  radar_show_legend: {
+    type: 'CheckboxControl',
+    label: t('Show Legend'),
+    default: false,
+    renderTrigger: true,
+    description: t('Show/Hide Legend'),
+  },
+
+  radar_levels: {
+    type: 'SelectControl',
+    label: t('Level Count'),
+    choices: formatSelectOptions([3, 5, 8, 10]),
+    renderTrigger: true,
+    default: 5,
+    description: t('How many levels or inner circles should there be drawn'),
+  },
+
+  radar_label_dist: {
+    type: 'SelectControl',
+    label: t('Label Distance'),
+    choices: formatSelectOptions([1, 1.1, 1.12, 1.15, 1.18, 1.2]),
+    renderTrigger: true,
+    default: 1.1,
+    description: t('How much farther than the radius of the outer circle should the labels be placed'),
+  },
+
+  radar_label_wrap: {
+    type: 'SelectControl',
+    label: t('Label Wrap'),
+    choices: formatSelectOptions([50,60,70,80,90,100,120,150]),
+    renderTrigger: true,
+    default: 60,
+    description: t('The number of pixels after which a label needs to be given a new line'),
+  },
+
 };
 export default controls;
