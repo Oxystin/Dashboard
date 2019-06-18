@@ -9,6 +9,7 @@ export default {
       controlSetRows: [
         ['groupby'],
         ['metrics'],
+        ['adhoc_filters'],
       ],
     },
     {
