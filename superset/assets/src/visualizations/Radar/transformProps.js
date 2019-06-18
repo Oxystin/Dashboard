@@ -15,5 +15,6 @@ export default function transformProps(chartProps) {
     radarLevels,
     radarLabelDist,
     radarLabelWrap,
+    chartId:formData.sliceId,
   };
 }
