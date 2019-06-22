@@ -69,6 +69,16 @@ class Chart extends React.PureComponent {
     });
   }
 
+  renderStackTraceMessage() {
+    const { chartAlert, chartStackTrace, queryResponse } = this.props;
+    return (
+      <StackTraceMessage
+        message={chartAlert}
+        link={queryResponse ? queryResponse.link : null}
+        stackTrace={chartStackTrace}
+      />);
+  }
+
   render() {
     const {
       chartId,
@@ -89,6 +99,10 @@ class Chart extends React.PureComponent {
     const containerStyles = isLoading ? { height, width } : null;
     const isFaded = refreshOverlayVisible && !errorMessage;
     this.renderContainerStartTime = Logger.getTimestamp();
+
+    if (chartStatus === 'failed') {
+      return this.renderStackTraceMessage();
+    }
 
     return (
       <ErrorBoundary onError={this.handleRenderContainerFailure} showMessage={false}>
