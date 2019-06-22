@@ -764,6 +764,7 @@ function nvd3Vis(element, props) {
       const yAxisFormatters = data.map(datum => (
         datum.yAxis === 1 ? yAxisFormatter1 : yAxisFormatter2));
       chart.useInteractiveGuideline(true);
+      chart.noData("");
       chart.interactiveLayer.tooltip.contentGenerator(d =>
         generateMultiLineTooltipContent(d, xAxisFormatter, yAxisFormatters));
       if (vizType === 'dual_line') {
