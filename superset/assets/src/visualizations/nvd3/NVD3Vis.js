@@ -1005,7 +1005,7 @@ function nvd3Vis(element, props) {
 
       // on scroll, hide tooltips. throttle to only 4x/second.
       //window.addEventListener('scroll', throttle(() => hideTooltips(element), 250));
-      window.addEventListener('scroll', throttle(() => hideTooltips(false), 250));
+      //window.addEventListener('scroll', throttle(() => hideTooltips(false), 250));
 
       // on scroll, hide tooltips. 
       d3.select(window).on("scroll." + chartid, function() {
@@ -1235,7 +1235,7 @@ function nvd3Vis(element, props) {
   // hide tooltips before rendering chart, if the chart is being re-rendered sometimes
   // there are left over tooltips in the dom,
   // this will clear them before rendering the chart again.
-  hideTooltips(true);
+  hideTooltips(element);
 
   nv.addGraph(drawGraph);
 }
