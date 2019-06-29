@@ -2480,5 +2480,22 @@ export const controls = {
     description: t('The number of pixels after which a label needs to be given a new line'),
   },
 
+  readonly: {
+    type: 'CheckboxControl',
+    label: t('Read Only Mode'),
+    default: false,
+    renderTrigger: true,
+    description: t('Whether to show/hide the left panel'),
+  },
+
+  config: {
+    type: 'TextAreaControl',
+    renderTrigger: true,
+    language: 'json',
+    label: t('Config'),
+    description: t('State of the Kepler.gl visualization as JSON'),
+    default: '',
+  },
+
 };
 export default controls;
