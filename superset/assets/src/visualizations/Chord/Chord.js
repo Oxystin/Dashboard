@@ -110,10 +110,10 @@ function Chord(element, props) {
   // Add an elaborate mouseover title for each chord.
   chord.append('title').text(function (d) {
     return nodes[d.source.index]
-    + ' → ' + nodes[d.target.index]
+    + ' ← ' + nodes[d.target.index]
     + ': ' + f(d.source.value)
     + '\n' + nodes[d.target.index]
-    + ' → ' + nodes[d.source.index]
+    + ' ← ' + nodes[d.source.index]
     + ': ' + f(d.target.value);
   });
 }
