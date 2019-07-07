@@ -45,6 +45,13 @@ export default {
         ['adhoc_filters'],
       ],
     },
+    {
+      label: t('Advanced'),
+      expanded: true,
+      controlSetRows: [
+        ['steps'],
+      ],
+    },
     annotations,
   ],
   controlOverrides: {
@@ -71,5 +78,15 @@ export default {
         ['time_range'],
       ],
     },
+  },
+  controlOverrides: {
+      steps: {
+        isInt: false,
+        validators: null,
+        renderTrigger: false,
+        default: '',
+        label: t('Dashed line JSON'),
+        description: t('Dashed line series. Example: {"key":["МТС","Т2"]}'),
+      },
   },
 };

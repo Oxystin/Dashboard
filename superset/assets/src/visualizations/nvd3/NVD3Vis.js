@@ -264,8 +264,21 @@ function nvd3Vis(element, props) {
         json.key.forEach(function(series_name) {
           const index = keys.indexOf(series_name);
           const legend_index = legends.indexOf(series_name);
-          if (index > 0 ){
-            const path = svg.selectAll('.nv-series-' + index + ' .nv-line');
+          var path;
+          if (index > -1 ){
+            if (data[index].yAxis) {
+              if (data[index].yAxis == 1) {
+                path = svg.select('.lines1Wrap').selectAll('.nv-series-' + index + ' .nv-line');
+              } else {
+                const col_yaxis1 = data.reduce(function(sum, current) {
+                  return sum + (current.yAxis == 1);
+                },0);
+
+                path = svg.select('.lines2Wrap').selectAll('.nv-series-' + (index - col_yaxis1) + ' .nv-line');
+              }
+            } else {
+              path = svg.selectAll('.nv-series-' + index + ' .nv-line');
+            }
             path
             .classed("line-dash", true)
             .attr("stroke-dashoffset", 24)
@@ -490,6 +503,16 @@ function nvd3Vis(element, props) {
       case 'line_multi':
         chart = nv.models.multiChart();
         chart.interpolate(lineInterpolation);
+
+        chart.yAxis1.dispatch.on('renderEnd', function(){
+          Custom_Style_Lines(svg, data);
+          if (showMarkers) {
+            svg.selectAll('.nv-point').filter((d) => d[0].y !== null)
+            .style('stroke-opacity', 1)
+            .style('fill-opacity', 1);
+          }
+        });
+
         break;
 
       case 'bar':
@@ -765,12 +788,11 @@ function nvd3Vis(element, props) {
         datum.yAxis === 1 ? yAxisFormatter1 : yAxisFormatter2));
       chart.useInteractiveGuideline(true);
       chart.noData("");
+      chart.legendRightAxisHint('');
       chart.interactiveLayer.tooltip.contentGenerator(d =>
         generateMultiLineTooltipContent(d, xAxisFormatter, yAxisFormatters));
       if (vizType === 'dual_line') {
         chart.showLegend(width > BREAKPOINTS.small);
-
-        chart.legendRightAxisHint('');
 
         data[0].type = selectChart;
         data[1].type = selectChart2;
