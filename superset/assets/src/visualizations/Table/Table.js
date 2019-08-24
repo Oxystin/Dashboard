@@ -258,7 +258,7 @@ function TableVis(element, props) {
   });
 
   if (includeSearch) {
-    $container.prepend('<input id="searchBox_' + chartId + '" class="dataTables_filter" type="text">');
+    $container.prepend('<input id="searchBox_' + chartId + '" class="dataTables_filter" type="search" placeholder="Поиск">');
     $('#searchBox_' + chartId ).on( 'keyup click', function () {
       datatable.search(this.value).draw();
     });
