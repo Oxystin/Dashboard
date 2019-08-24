@@ -2698,6 +2698,30 @@
       "default": false,
       "description": "Whether to apply filter when items are clicked"
     },
+    "clear_table_filter": {
+      "type": "CheckboxControl",
+      "label": "Clear Table Filter Control",
+      "renderTrigger": true,
+      "default": false,
+      "description": "Create Clear Filter Control. Class: \".clear_filter\""
+    },
+    "clear_table_element": {
+      "type": "TextControl",
+      "label": "JSON clear filter key",
+      "description": "Keys force clear filter. Example: {\"keys\":[\"key1\",\"key2\"]}"
+    },
+    "json_parameter": {
+      "type": "TextControl",
+      "label": "Number ClassName JSON",
+      "default": "",
+      "description": "Add ClassName depending of the value. Example: {\"range\":[0.95,1],\"classname\":[ \"minimum\", \"middle\", \"maximum\"]}"
+    },
+    "json_parameter_2": {
+      "type": "TextControl",
+      "label": "Category ClassName JSON",
+      "default": "",
+      "description": "Add ClassName depending of the Category. Example: {\"keys\":[\"name0\", \"name1\", \"name2\"],\"classname\": [\"hide\", \"classname_row_1\", \"classname_row_2\"]}"
+    },
     "align_pn": {
       "type": "CheckboxControl",
       "label": "Align +/-",
@@ -2824,6 +2848,13 @@
       "renderTrigger": true,
       "default": false,
       "description": "Fill background widget"
+    },
+    "render_without_header": {
+      "type": "CheckboxControl",
+      "label": "No header",
+      "renderTrigger": true,
+      "default": false,
+      "description": "Render chart without widget header"
     },
     "scale_y": {
       "type": "SelectControl",
@@ -2993,6 +3024,13 @@
       "renderTrigger": true,
       "default": true,
       "description": "The rich tooltip shows a list of all series for that point in time"
+    },
+    "tooltip_proportion": {
+      "type": "CheckboxControl",
+      "label": "Show Proportion",
+      "renderTrigger": true,
+      "default": false,
+      "description": "Show Proportion in Tooltip"
     },
     "y_log_scale": {
       "type": "CheckboxControl",
@@ -4003,6 +4041,162 @@
       "renderTrigger": true,
       "description": "Whether to normalize the histogram",
       "default": false
+    },
+    "radar_scale": {
+      "type": "SelectControl",
+      "label": "Radius Scale",
+      "choices": [
+        [
+          "min",
+          "min"
+        ],
+        [
+          "middle",
+          "middle"
+        ],
+        [
+          "max",
+          "max"
+        ]
+      ],
+      "renderTrigger": true,
+      "default": "max",
+      "description": "Radius Scale"
+    },
+    "radar_fill_area": {
+      "type": "CheckboxControl",
+      "label": "Fill Area",
+      "default": true,
+      "renderTrigger": true,
+      "description": "The opacity of the area of the blob"
+    },
+    "radar_line_smooth": {
+      "type": "CheckboxControl",
+      "label": "Line Smooth",
+      "default": true,
+      "renderTrigger": true,
+      "description": "Area and stroke will follow a round path (cardinal-closed)"
+    },
+    "radar_show_legend": {
+      "type": "CheckboxControl",
+      "label": "Show Legend",
+      "default": false,
+      "renderTrigger": true,
+      "description": "Show/Hide Legend"
+    },
+    "radar_levels": {
+      "type": "SelectControl",
+      "label": "Level Count",
+      "choices": [
+        [
+          3,
+          "3"
+        ],
+        [
+          5,
+          "5"
+        ],
+        [
+          8,
+          "8"
+        ],
+        [
+          10,
+          "10"
+        ]
+      ],
+      "renderTrigger": true,
+      "default": 5,
+      "description": "How many levels or inner circles should there be drawn"
+    },
+    "radar_label_dist": {
+      "type": "SelectControl",
+      "label": "Label Distance",
+      "choices": [
+        [
+          1,
+          "1"
+        ],
+        [
+          1.1,
+          "1.1"
+        ],
+        [
+          1.12,
+          "1.12"
+        ],
+        [
+          1.15,
+          "1.15"
+        ],
+        [
+          1.18,
+          "1.18"
+        ],
+        [
+          1.2,
+          "1.2"
+        ]
+      ],
+      "renderTrigger": true,
+      "default": 1.1,
+      "description": "How much farther than the radius of the outer circle should the labels be placed"
+    },
+    "radar_label_wrap": {
+      "type": "SelectControl",
+      "label": "Label Wrap",
+      "choices": [
+        [
+          50,
+          "50"
+        ],
+        [
+          60,
+          "60"
+        ],
+        [
+          70,
+          "70"
+        ],
+        [
+          80,
+          "80"
+        ],
+        [
+          90,
+          "90"
+        ],
+        [
+          100,
+          "100"
+        ],
+        [
+          120,
+          "120"
+        ],
+        [
+          150,
+          "150"
+        ]
+      ],
+      "renderTrigger": true,
+      "default": 60,
+      "description": "The number of pixels after which a label needs to be given a new line"
+    },
+    "readonly": {
+      "type": "CheckboxControl",
+      "label": "Read Only Mode",
+      "default": false,
+      "renderTrigger": true,
+      "description": "Whether to show/hide the left panel"
+    },
+    "config": {
+      "type": "TextAreaControl",
+      "renderTrigger": true,
+      "language": "json",
+      "label": "Config",
+      "description": "State of the Kepler.gl visualization as JSON",
+      "default": ""
     }
   }
 }
