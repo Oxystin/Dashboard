@@ -1497,6 +1497,14 @@ export const controls = {
     description: t('Whether to align the background chart for +/- values'),
   },
 
+  show_progress_bar: {
+    type: 'CheckboxControl',
+    label: t('ProgressBar'),
+    renderTrigger: true,
+    default: false,
+    description: t('Show Progress Bar'),
+  },
+
   auto_scale_negative: {
     type: 'CheckboxControl',
     label: t('Auto Scale Y'),

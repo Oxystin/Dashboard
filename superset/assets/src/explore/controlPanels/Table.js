@@ -45,7 +45,7 @@ export default {
         ['table_timestamp_format'],
         ['page_length', null],
         ['include_search', null],
-        ['align_pn', 'color_pn'],
+        ['show_progress_bar','align_pn', 'color_pn'],
         ['table_filter','clear_table_filter'],
       ],
     },

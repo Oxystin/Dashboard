@@ -15,6 +15,7 @@ const propTypes = {
   // Each object is { field1: value1, field2: value2 }
   data: PropTypes.arrayOf(PropTypes.object),
   height: PropTypes.number,
+  showProgressBar: PropTypes.bool,
   alignPositiveNegative: PropTypes.bool,
   colorPositiveNegative: PropTypes.bool,
   columns: PropTypes.arrayOf(PropTypes.shape({
@@ -77,6 +78,7 @@ function TableVis(element, props) {
     chartId,
     clearTableFilter,
     clearTableElement,
+    showProgressBar,
   } = props;
 
   const $container = $(element);
@@ -126,7 +128,7 @@ function TableVis(element, props) {
       maxes[metrics[i]] = d3.max(col(metrics[i]).map(Math.abs));
     } else {
       maxes[metrics[i]] = d3.max(col(metrics[i]));
-      mins[metrics[i]] = d3.min(col(metrics[i]));
+      mins[metrics[i]] = d3.min(col(metrics[i]).map(d => d<0 ? d: 0));
     }
   }
 
@@ -179,36 +181,9 @@ function TableVis(element, props) {
     }))
     .enter()
     .append('td')
-    .style('background-image', function (d) {
-      if (d.isMetric) {
-        const r = (colorPositiveNegative && d.val < 0) ? 150 : 0;
-        if (alignPositiveNegative) {
-          const perc = Math.abs(Math.round((d.val / maxes[d.col]) * 100));
-          // The 0.01 to 0.001 is a workaround for what appears to be a
-          // CSS rendering bug on flat, transparent colors
-          return (
-            `linear-gradient(to right, rgba(${r},0,0,0.2), rgba(${r},0,0,0.2) ${perc}%, ` +
-            `rgba(0,0,0,0.01) ${perc}%, rgba(0,0,0,0.001) 100%)`
-          );
-        }
-        const posExtent = Math.abs(Math.max(maxes[d.col], 0));
-        const negExtent = Math.abs(Math.min(mins[d.col], 0));
-        const tot = posExtent + negExtent;
-        const perc1 = Math.round((Math.min(negExtent + d.val, negExtent) / tot) * 100);
-        const perc2 = Math.round((Math.abs(d.val) / tot) * 100);
-        // The 0.01 to 0.001 is a workaround for what appears to be a
-        // CSS rendering bug on flat, transparent colors
-        return (
-          `linear-gradient(to right, rgba(0,0,0,0.01), rgba(0,0,0,0.001) ${perc1}%, ` +
-          `rgba(${r},0,0,0.2) ${perc1}%, rgba(${r},0,0,0.2) ${perc1 + perc2}%, ` +
-          `rgba(0,0,0,0.01) ${perc1 + perc2}%, rgba(0,0,0,0.001) 100%)`
-        );
-      }
-      return null;
-    })
     .classed('text-right', d => d.isMetric)
     //.attr('title', d => (!Number.isNaN(d.val) ? formatValue(d.val) : d.val))
-    .attr('title', d => d.val)
+    //.attr('title', d => d.val)
     .attr('data-sort', d => (d.isMetric) ? d.val : null)
     // Check if the dashboard currently has a filter for each row
     .classed('filtered', d =>
@@ -242,6 +217,44 @@ function TableVis(element, props) {
     })
     .style('cursor', d => (!d.isMetric) ? 'pointer' : '')
     .html(d => d.html ? d.html : d.val);
+
+    if (showProgressBar) {
+        table.selectAll('td')
+        .filter(d => d.isMetric)
+        .append('div')
+        .attr("id",'cell_progress_bar')
+        .append('div')
+        .attr("class", function (d) {
+          if (colorPositiveNegative) {
+            return d.val>=0 ? 'positive_bar progress_bar' : 'negative_bar progress_bar'
+          } else {
+            return 'neutral_bar progress_bar'
+          } 
+        })
+        .style("left", function (d) {
+          let perc=0;
+          const total_col = Math.abs(maxes[d.col]) + Math.abs(mins[d.col]);
+          if (!alignPositiveNegative) {
+            if (d.val>=0 ) {
+              perc = total_col!=0 ? Math.abs(mins[d.col]) / total_col * 100 : 0;
+            } else {
+              perc = total_col!=0 ? Math.abs((mins[d.col])-d.val) / total_col * 100 : 0;
+            }
+          }
+        return perc.toFixed(2) + '%'
+        })
+        .style('width', "0%").transition().duration(1000)
+        .style('width', function (d) {
+          let perc;
+          if (alignPositiveNegative) {
+            perc = maxes[d.col]!=0 ? Math.abs(d.val) / maxes[d.col]* 100 : 0;
+          } else {
+            const total_col = Math.abs(maxes[d.col]) + Math.abs(mins[d.col]);
+            perc = total_col!=0 ? Math.abs(d.val) / total_col * 100 : 0;
+          }
+          return perc.toFixed(2) + '%'
+        })
+      }
 
   const paging = pageLength && pageLength > 0;
 

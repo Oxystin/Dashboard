@@ -10,6 +10,7 @@ export default function transformProps(chartProps) {
   const {
     alignPn,
     colorPn,
+    showProgressBar,
     includeSearch,
     metrics,
     orderDesc,
@@ -45,6 +46,7 @@ export default function transformProps(chartProps) {
   return {
     height,
     data: records,
+    showProgressBar,
     alignPositiveNegative: alignPn,
     colorPositiveNegative: colorPn,
     columns: processedColumns,
