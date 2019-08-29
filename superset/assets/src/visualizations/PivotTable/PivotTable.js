@@ -24,6 +24,9 @@ const propTypes = {
   verboseMap: PropTypes.objectOf(PropTypes.string),
   jsonParameter: PropTypes.string,
   jsonParameter2: PropTypes.string,
+  showProgressBar: PropTypes.bool,
+  alignPositiveNegative: PropTypes.bool,
+  colorPositiveNegative: PropTypes.bool,
 };
 
 function PivotTable(element, props) {
@@ -36,6 +39,9 @@ function PivotTable(element, props) {
     verboseMap,
     jsonParameter,
     jsonParameter2,
+    showProgressBar,
+    alignPositiveNegative,
+    colorPositiveNegative,
   } = props;
 
   const { html, columns } = data;
@@ -93,6 +99,40 @@ function PivotTable(element, props) {
   $container.find('thead tr:first th').each(replaceCell);
   $container.find('thead tr th:first-child').each(replaceCell);
 
+  const maxes = {};
+  const mins = {};
+
+  var column_count;
+
+  if (showProgressBar) {
+    var data_table = $container.find('tbody tr').find('td').map(function(){
+      var value = $(this).text();
+      if(!isNaN(value) && value.length != 0) {
+        return parseFloat(value);
+      } else {
+        return 0
+      }
+    }).get()
+  
+    column_count = cols.length;
+    const arr_count = data_table.length;
+  
+    for (let i = 0; i < column_count; i += 1) {
+      let min=0;
+      let max=0;
+      for (let n = 0; n < arr_count; n += column_count) {
+        if (data_table[i+n] < min) {
+          min = data_table[i+n]
+        }
+        if (data_table[i+n] > max) {
+          max = data_table[i+n]
+        }
+      }
+      maxes['col_'+i] = max;
+      mins['col_'+i] = min;
+    }
+  }
+
   // jQuery hack to format number
   $container.find('tbody tr').each(function () {
     $(this).find('td').each(function (i) {
@@ -107,11 +147,56 @@ function PivotTable(element, props) {
         }
         // Add classname depending of the value
         $(this).addClass(getClassnameValue(tdText));
-        $(this)[0].textContent = formatNumber(format, tdText);
+        $(this).addClass('text_progress_right')
+        $(this).text(formatNumber(format, tdText));
         $(this).attr('data-sort', tdText);
       }
     });
   });
+
+  if (showProgressBar) {
+    // Progress Bar
+    $container.find('tbody tr').each(function (row) {
+      $(this).find('td').each(function (i) {
+        const value = data_table[row*column_count+i];
+
+        $(this).append("<div id='pivot_progress_bar'><div id='child_progress_bar'></div></div>");
+
+        $("#child_progress_bar",this)
+        .addClass(function() {
+          if (colorPositiveNegative) {
+            return value>=0 ? 'positive_bar progress_bar' : 'negative_bar progress_bar'
+          } else {
+            return 'neutral_bar progress_bar'
+          }           
+        })
+        .css("left", function (d) {
+          let perc=0;
+          const total_col = Math.abs(maxes['col_'+i]) + Math.abs(mins['col_'+i]);
+          if (!alignPositiveNegative) {
+            if (value>=0 ) {
+              perc = total_col!=0 ? Math.abs(mins['col_'+i]) / total_col * 100 : 0;
+            } else {
+              perc = total_col!=0 ? Math.abs((mins['col_'+i])-value) / total_col * 100 : 0;
+            }
+          }
+        return perc.toFixed(2) + '%'
+        })
+        .css('width', function () {
+          let perc;
+          if (alignPositiveNegative) {
+            const total_col = Math.max(maxes['col_'+i],Math.abs(mins['col_'+i]));
+            perc = total_col!=0 ? Math.abs(value) / total_col * 100 : 0;
+          } else {
+            const total_col = Math.abs(maxes['col_'+i]) + Math.abs(mins['col_'+i]);
+            perc = total_col!=0 ? Math.abs(value) / total_col * 100 : 0;
+          }
+          return perc.toFixed(2) + '%'
+        })
+      });
+    });
+    data_table = [];
+  }
 
   // Add classname depending of the Category name
   if (categoryClassname) {

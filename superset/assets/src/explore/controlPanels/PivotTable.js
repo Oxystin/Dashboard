@@ -28,6 +28,13 @@ export default {
         ['json_parameter_2'],
       ],
     },
+    {
+      label: t('Options'),
+      expanded: true,
+      controlSetRows: [
+        ['show_progress_bar','align_pn', 'color_pn'],
+      ],
+    },
   ],
   controlOverrides: {
     groupby: { includeTime: true },

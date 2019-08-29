@@ -5,6 +5,9 @@ export default function transformProps(chartProps) {
     numberFormat,
     jsonParameter,
     jsonParameter2,
+    alignPn,
+    colorPn,
+    showProgressBar,
   } = formData;
   const {
     columnFormats,
@@ -20,5 +23,8 @@ export default function transformProps(chartProps) {
     verboseMap,
     jsonParameter,
     jsonParameter2,
+    showProgressBar,
+    alignPositiveNegative: alignPn,
+    colorPositiveNegative: colorPn,
   };
 }

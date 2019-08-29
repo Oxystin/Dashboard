@@ -2,3 +2,31 @@
 .widget.pivot_table tr > td {
   padding: 1px 5px;
 }
+
+#pivot_progress_bar {
+  float:left;
+  width: 75%;
+}
+
+#child_progress_bar.progress_bar {
+  position: relative;
+  height: 10px;
+  border-radius: 4px;
+  top:4px;
+}
+
+#child_progress_bar.positive_bar {
+  background-color:#52BE80;
+}
+
+#child_progress_bar.negative_bar {
+  background-color: #EC7063;
+}
+
+#child_progress_bar.neutral_bar {
+  background-color: #D5D8DC;
+}
+
+.text_progress_right {
+  text-align: right;
+}
