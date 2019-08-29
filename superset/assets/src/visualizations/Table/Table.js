@@ -124,12 +124,8 @@ function TableVis(element, props) {
   const maxes = {};
   const mins = {};
   for (let i = 0; i < metrics.length; i += 1) {
-    if (alignPositiveNegative) {
-      maxes[metrics[i]] = d3.max(col(metrics[i]).map(Math.abs));
-    } else {
-      maxes[metrics[i]] = d3.max(col(metrics[i]));
+      maxes[metrics[i]] = d3.max(col(metrics[i]).map(d => d>=0 ? d: 0));
       mins[metrics[i]] = d3.min(col(metrics[i]).map(d => d<0 ? d: 0));
-    }
   }
 
   const tsFormatter = getTimeFormatter(tableTimestampFormat);
@@ -247,7 +243,8 @@ function TableVis(element, props) {
         .style('width', function (d) {
           let perc;
           if (alignPositiveNegative) {
-            perc = maxes[d.col]!=0 ? Math.abs(d.val) / maxes[d.col]* 100 : 0;
+            const total_col = Math.max(maxes[d.col],Math.abs(mins[d.col]));
+            perc = total_col ? Math.abs(d.val) / total_col * 100 : 0;
           } else {
             const total_col = Math.abs(maxes[d.col]) + Math.abs(mins[d.col]);
             perc = total_col!=0 ? Math.abs(d.val) / total_col * 100 : 0;
