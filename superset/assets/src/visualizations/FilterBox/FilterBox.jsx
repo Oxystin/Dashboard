@@ -44,6 +44,7 @@ const propTypes = {
   showSqlaTimeColumn: PropTypes.bool,
   showDruidTimeGrain: PropTypes.bool,
   showDruidTimeOrigin: PropTypes.bool,
+  multiMode: PropTypes.bool,
 };
 const defaultProps = {
   origSelectedValues: {},
@@ -54,6 +55,7 @@ const defaultProps = {
   showDruidTimeGrain: false,
   showDruidTimeOrigin: false,
   instantFiltering: true,
+  multiMode: true,
 };
 
 class FilterBox extends React.Component {
@@ -82,17 +84,23 @@ class FilterBox extends React.Component {
 
   clickApply() {
     const { selectedValues } = this.state;
+    const { multiMode} = this.props;
     Object.keys(selectedValues).forEach((fltr, i, arr) => {
       let refresh = false;
       if (i === arr.length - 1) {
         refresh = true;
       }
-      this.props.onChange(fltr, selectedValues[fltr], false, refresh);
+      if (multiMode) {
+        this.props.onChange(fltr, selectedValues[fltr], false, refresh);
+      } else {
+        this.props.onChange(fltr, selectedValues[fltr] ? [selectedValues[fltr]] : null, false, refresh);
+      }
     });
     this.setState({ hasChanged: false });
   }
 
   changeFilter(filter, options) {
+    const { multiMode} = this.props;
     const fltr = TIME_FILTER_MAP[filter] || filter;
     let vals = null;
     if (options !== null) {
@@ -108,7 +116,11 @@ class FilterBox extends React.Component {
     selectedValues[fltr] = vals;
     this.setState({ selectedValues, hasChanged: true });
     if (this.props.instantFiltering) {
-      this.props.onChange(fltr, vals, false, true);
+      if (multiMode) {
+        this.props.onChange(fltr, vals, false, true);
+      } else {
+        this.props.onChange(fltr, vals ? [vals] : [], false, true);
+      }
     }
   }
 
@@ -172,13 +184,13 @@ class FilterBox extends React.Component {
   }
 
   renderFilters() {
-    const { filtersFields, filtersChoices } = this.props;
+    const { filtersFields, filtersChoices, multiMode} = this.props;
     const { selectedValues } = this.state;
 
     // Add created options to filtersChoices, even though it doesn't exist,
     // or these options will exist in query sql but invisible to end user.
     Object.keys(selectedValues)
-      .filter(key => selectedValues.hasOwnProperty(key) && (key in filtersChoices))
+      .filter(key => selectedValues.hasOwnProperty(key) && (key in filtersChoices) && selectedValues[key])
       .forEach((key) => {
         const choices = filtersChoices[key] || [];
         const choiceIds = new Set(choices.map(f => f.id));
@@ -206,9 +218,9 @@ class FilterBox extends React.Component {
           <OnPasteSelect
             placeholder={t('Select [%s]', label)}
             key={key}
-            multi
+            multi = {multiMode}
             value={selectedValues[key]}
-            options={data.map((opt) => {
+            options={data.filter(d => d!== null).map((opt) => {
               const perc = Math.round((opt.metric / max) * 100);
               const backgroundImage = (
                 'linear-gradient(to right, lightgrey, ' +

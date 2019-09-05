@@ -15,6 +15,7 @@ export default function transformProps(chartProps) {
     showDruidTimeOrigin,
     showSqlaTimeColumn,
     showSqlaTimeGranularity,
+    multiMode,
   } = formData;
   const { verboseMap } = datasource;
 
@@ -35,5 +36,6 @@ export default function transformProps(chartProps) {
     showDruidTimeOrigin,
     showSqlaTimeColumn,
     showSqlaTimeGrain: showSqlaTimeGranularity,
+    multiMode,
   };
 }

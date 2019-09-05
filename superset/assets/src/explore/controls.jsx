@@ -2505,5 +2505,13 @@ export const controls = {
     default: '',
   },
 
+  multi_mode: {
+    type: 'CheckboxControl',
+    label: t('MultiSelect'),
+    default: true,
+    renderTrigger: false,
+    description: t('Select Multi Value'),
+  },
+
 };
 export default controls;
