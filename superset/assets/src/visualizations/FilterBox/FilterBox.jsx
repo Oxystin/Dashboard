@@ -219,7 +219,7 @@ class FilterBox extends React.Component {
             placeholder={t('Select [%s]', label)}
             key={key}
             multi = {multiMode}
-            value={selectedValues[key]}
+            value={ !multiMode && Array.isArray(selectedValues[key]) ? selectedValues[key][0] : selectedValues[key] }
             options={data.filter(d => d!== null).map((opt) => {
               const perc = Math.round((opt.metric / max) * 100);
               const backgroundImage = (
