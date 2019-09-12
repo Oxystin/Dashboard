@@ -2513,5 +2513,29 @@ export const controls = {
     description: t('Select Multi Value'),
   },
 
+  waterfall_color_total: {
+    label: t('Total'),
+    description: t('Total Color'),
+    type: 'ColorPickerControl',
+    default: {r:150, g: 150, b:150, a:1},
+    renderTrigger: true,
+  },
+
+  waterfall_color_positive: {
+    label: t('Positive'),
+    description: t('Positive Color'),
+    type: 'ColorPickerControl',
+    default: {r:155, g: 197, b:61, a:1},
+    renderTrigger: true,
+  },
+
+  waterfall_color_negative: {
+    label: t('Negative'),
+    description: t('Negative Color'),
+    type: 'ColorPickerControl',
+    default: {r:229, g: 89, b:52, a:1},
+    renderTrigger: true,
+  },
+
 };
 export default controls;

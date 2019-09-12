@@ -21,6 +21,7 @@ import RoseChartPlugin from '../Rose/RoseChartPlugin';
 import SankeyChartPlugin from '../Sankey/SankeyChartPlugin';
 import TimePivotChartPlugin from '../nvd3/TimePivot/TimePivotChartPlugin';
 import RadarChartPlugin from '../Radar/RadarChartPlugin';
+import WaterfallChartPlugin from '../Waterfall/WaterfallChartPlugin';
 
 export default class LegacyChartPreset extends Preset {
   constructor() {
@@ -51,6 +52,7 @@ export default class LegacyChartPreset extends Preset {
         new SankeyChartPlugin().configure({ key: 'sankey' }),
         new TimePivotChartPlugin().configure({ key: 'time_pivot' }),
         new RadarChartPlugin().configure({ key: 'radar' }),
+        new WaterfallChartPlugin().configure({ key: 'waterfall' }),
       ],
     });
   }
