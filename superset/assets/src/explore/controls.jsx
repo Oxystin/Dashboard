@@ -2537,5 +2537,33 @@ export const controls = {
     renderTrigger: true,
   },
 
+  waterfall_label_rotate: {
+    type: 'SelectControl',
+    label: t('Label Rotate'),
+    freeForm: true,
+    choices: formatSelectOptions([0,10,20,45,90]),
+    renderTrigger: true,
+    default: 0,
+    description: t('Label Rotate'),
+  },
+
+  waterfall_time_shift: {
+    type: 'SelectControl',
+    label: t('TimeShift'),
+    freeForm: true,
+    choices: formatSelectOptions([1,2,3,4,6,12]),
+    renderTrigger: true,
+    default: 12,
+    description: t('TimeShift'),
+  },
+
+  waterfall_hide_control: {
+    type: 'CheckboxControl',
+    label: t('Hide Control'),
+    default: false,
+    renderTrigger: true,
+    description: t('Hide Control'),
+  },
+
 };
 export default controls;

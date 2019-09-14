@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { getSequentialSchemeRegistry } from '@superset-ui/color';
 import { getNumberFormatter } from '@superset-ui/number-format';
 import { CategoricalColorNamespace } from '@superset-ui/color';
+import { d3LocaleTimeFormat } from '../localeformat';
 import './Waterfall.css';
 
 const propTypes = {
@@ -20,9 +21,28 @@ function Waterfall(element, props) {
     ColorTotal,
     ColorPositive,
     ColorNegative,
+    dateTimeFormat,
+    waterfallLabelRotate, 
+    waterfallTimeShift,
+    waterfallHideControl,
   } = props;
 
-  const back_to_the_past = 12;
+  const NL = d3.locale ({
+    "decimal": ".",
+    "thousands": " ",
+    "grouping": [3],
+    "currency": ["",""],
+    "dateTime": "",
+    "date": "",
+    "time": "",
+    "periods": [],
+    "days": [],
+    "shortDays": [],
+    "months": [],
+    "shortMonths": []
+  })
+
+  const format_num = NL.numberFormat("$,.f");
 
   const div = d3.select(element)
     .attr("class", "waterfall_chart");
@@ -35,9 +55,9 @@ function Waterfall(element, props) {
 
    const format = numberFormat ? getNumberFormatter(numberFormat) : d3.format('.3sl;');
 
-  WaterFallDraw (svg[0], data, back_to_the_past, ColorTotal,ColorPositive,ColorNegative);
+  WaterFallDraw (svg[0], data, waterfallTimeShift, ColorTotal,ColorPositive,ColorNegative,waterfallLabelRotate);
 
-  function WaterFallDraw(svg_area, data_raw, shift, colorTotal, colorPositive, colorNegative, labelRotate=0){
+  function WaterFallDraw(svg_area, data_raw, shift, colorTotal, colorPositive, colorNegative, labelRotate){
 
     var date_sort = data_raw[0].values.map (d => d.x).sort((a, b) => a - b);
     var month1 = date_sort[date_sort.length-1];
@@ -45,14 +65,15 @@ function Waterfall(element, props) {
     date_sort =[];
 
     var svg = d3.select(svg_area[0]).attr("class", "wf-chart");
-    var tooltip = d3.select(element).append("div").attr("class", "wf-chart-tooltip");
+    var svgParent =  d3.select(element).attr("style", "position:relative;");
+    var tooltip = d3.select('body').append("div").attr("class", "wf-chart-tooltip");
     var margin=25;
     
     var xLn; // длина оси X
     var yLn; // длина оси Y
 
     //область графика
-    var chart = svg.append("g").attr("class", "chart-waterfall");
+    var chart = svg.append("g").attr("class", "chart");
     
     var SortArr = [month1,month2].sort(); // сортируем отображаемые месяца от раннего к познему
     month1 = SortArr[0];
@@ -60,14 +81,8 @@ function Waterfall(element, props) {
 
     // функция получения адекватного месяца и года
     function GetDateString(date_num){
-        var date = new Date(date_num);
-
-        var options = {
-            year: 'numeric',
-            month: 'long'
-          };
-        return date.toLocaleString("ru", options);
-
+        const date_format = d3LocaleTimeFormat(dateTimeFormat);
+        return date_format(date_num);
     }
 
     // отрисовка графика
@@ -98,11 +113,9 @@ function Waterfall(element, props) {
         // считаем перепады
         var agregate_sum = ttl1; //аккумулятивный итог изменеия итоговой суммы для расчета перепада
         for (let itemFactor of data_raw) {
-            var fValue1;
-            var fValue2;
-            var class_value;
             var fName = itemFactor.key; //имя фактора
             var fValueArr1 = itemFactor.values.filter(function(itemDate){return itemDate.x==month1}); //значение фактора в 1 периоде
+            var fValue1, fValue2;
             if (fValueArr1.length>0) fValue1 = fValueArr1[0].y;
             else fValue1=0;
             var fValueArr2 = itemFactor.values.filter(function(itemDate){return itemDate.x==month2}); //значение фактора во 2 периоде
@@ -111,6 +124,7 @@ function Waterfall(element, props) {
 
             var diff = fValue2 - fValue1; //смещение
             agregate_sum = agregate_sum + diff; //Полная сумма по фактору
+            var class_value ="";
             if (diff > 0) class_value = "plus";  //Для установки класса для раскрашивания
             else class_value = "minus";
 
@@ -126,7 +140,7 @@ function Waterfall(element, props) {
 
         // заносим тотал 2 месяца в массив
         data.push({
-            label: GetDateString(month2),
+            label: GetDateString(month2) + ' ',
             value: ttl2,
             total: ttl2,
             class: "total"
@@ -171,7 +185,7 @@ function Waterfall(element, props) {
             xTicks.each(function(d,i){
                 var box = this.getBoundingClientRect();
                 var width = box.width;
-                textHeight = box.height;
+                var textHeight = box.height;
                 if(textHeight > maxTextHeight) maxTextHeight = textHeight;   
             });
             marginBottom += maxTextHeight;
@@ -184,8 +198,6 @@ function Waterfall(element, props) {
 
         // масштабирование значений по Y (инициализация шкалы без домена)
         var yScale = d3.scale.linear().range([yLn, 0]);
-
-        var color;
         
         // екстремумы графика
         var minTotal = d3.min(data,function(d) { return d.total; });
@@ -248,6 +260,7 @@ function Waterfall(element, props) {
             .attr("rx", 1)
             .attr("style", function(d){
                 var fill = "fill: ";
+                var color;
                 if (d.class === "total") color=colorTotal;
                 if (d.class === "plus") color=colorPositive;
                 if (d.class === "minus") color=colorNegative;
@@ -259,10 +272,10 @@ function Waterfall(element, props) {
                     .attr('opacity', '.85');})
             .on("mousemove", function(d){ /* при движении мыши включаем тултип */
                 tooltip
-                  .style("left", d3.event.pageX + 30 + "px")
-                  .style("top", d3.event.pageY + 30 + "px")
+                  .style("left", d3.event.pageX + 15 + "px")
+                  .style("top", d3.event.pageY + 5 + "px")
                   .style("display", "inline-block")
-                  .html((d.label) + "<br>" + (d.value));
+                  .html((d.label) + "<br>" + format_num(d.value));
                 })
             .on("mouseout", function(d){ /* при убирании мыши скрываем тултип и ставим прозрачность 1 */
                 tooltip.style("display", "none");
@@ -276,7 +289,7 @@ function Waterfall(element, props) {
             .attr("x",function(d) { return xScale(d.label) + xScale.rangeBand()/2 })
             .attr("y", function(d) { return yScale(Math.max(d.total, (d.total - d.value)))+20;})
             .style({"text-anchor": "middle"})
-            .text(function(d){ return format(d.value)})
+            .text(d => format(d.value))
             ;
 
         // добавляем разрыв тоталов   
@@ -316,18 +329,27 @@ function Waterfall(element, props) {
     //высота области баров
     var sl_bar_h=30;
 
-    var dropdown = svg.append("g").attr("class","wf-chart-dropdown");
+    /*var dropdown = svg.append("g").attr("class","wf-chart-dropdown");
     dropdown.append("foreignObject").attr("style","width: 100%");
 
     var dropdownContainer = dropdown.select("foreignObject").append("xhtml:div").attr("class","dropdown-container")
     .attr("style", "height: "+(SliderH+margin+sl_bar_h)+"px;")
+    .classed("hide", true);
+    ;*/
+
+    var dropdown = svgParent.append("div").attr("class","wf-chart-dropdown").attr("style","z-index: 2;");
+
+    var dropdownContainer= dropdown.append("div").attr("class","wf-chart-dropdown-container")
+    .attr("style","width:" + width +"px; " + "height: "+(SliderH+margin+sl_bar_h)+"px; position:absolute; top:0px;")
     .classed("hide", true);
     ;
     
     dropdownContainer.append("svg")
         .attr("width", width)
         .attr("height", SliderH+sl_bar_h)
-        .attr("transform", "translate("+ 0 +","+ margin +")")
+        .style("position", "absolute")
+        .style("top", margin + "px")
+        //.attr("transform", "translate("+ 0 +","+ margin +")")
     ;
 
     var DatesArr = []; //массив дат для слайдера
@@ -383,9 +405,9 @@ function Waterfall(element, props) {
     // квантование для обратной привязки диапозонов координат к значениям данных.
     // к каждому значению периода будет привязана не отдельная точка, а диапозон, 
     // чтобы можно было прявызвать значения переодов с любым положением маркеров слайдера.
-    var slStep = Math.floor((slScale.range()[1] - slScale.range()[0])/2), // вычисляем половину шага 
-        slMinX = d3.min(slScale.range(), function(d) { return d; }) - slStep; 
-        var slMaxX = d3.max(slScale.range(), function(d) { return d; }) + slStep;  
+    var slStep = Math.floor((slScale.range()[1] - slScale.range()[0])/2); // вычисляем половину шага 
+    var slMinX = d3.min(slScale.range(), function(d) { return d; }) - slStep; 
+    var slMaxX = d3.max(slScale.range(), function(d) { return d; }) + slStep;  
     var quantScale = d3.scale.quantize().domain([slMinX, slMaxX]).range(slScale.domain()); //вычисляем шкалу квантования
     
     // размеры маркеров
@@ -428,8 +450,7 @@ function Waterfall(element, props) {
             .on("dragstart", draglineStartDrag)
             .on("drag", draglineMove)
             .on("dragend", draglineEnd)
-        )
-        ;
+        );
 
     // невидимая линия для перетаскивания
     var hideline = slider.append("line")
@@ -508,19 +529,18 @@ function Waterfall(element, props) {
     }
 
     // перемещение центральной линии
-    function draglineMove(d){
-
+    function draglineMove(){
+        //console.log(d3.event);
 
         hideline.attr("x1", (Number(hideline.attr("x1")) + d3.event.dx) ).attr("x2", (Number(hideline.attr("x2")) + d3.event.dx) )
    
-        x1 = Number(hideline.attr("x1"));
-        x2 = Number(hideline.attr("x2"));
+        var x1 = Number(hideline.attr("x1"));
+        var x2 = Number(hideline.attr("x2"));
         
-        var dx1 = quantScale(x1),
-        dx2 = quantScale(x2), 
-        xd1 = slScale(dx1),
-        xd2 = slScale(dx2)
-        ; 
+        var dx1 = quantScale(x1);
+        var dx2 = quantScale(x2); 
+        var xd1 = slScale(dx1);
+        var xd2 = slScale(dx2); 
 
         if (x1>=d3.min(slScale.range()) && x2<=d3.max(slScale.range()))
         {
@@ -533,10 +553,10 @@ function Waterfall(element, props) {
             handle.data(SelectValues).attr("x", function(d,i) { return slScale(SelectValues[i])-slHandleW/2; });
 
             tooltip
-                .style("left", d3.event.x + (-30) + "px")
-                .style("top", d3.event.y + 100 + "px")
                 .style("display", "inline-block")
-                .html(GetDateString(SelectValues[0]) + " - " + GetDateString(SelectValues[1]));
+                .style("left", d3.event.sourceEvent.pageX + (-30) + "px")
+                .style("top", d3.event.sourceEvent.pageY + 30 + "px")
+                .html(GetDateString(SelectValues[0]) + " - " + GetDateString(SelectValues[1])); 
         }
 
     }
@@ -556,15 +576,18 @@ function Waterfall(element, props) {
         .style("left", d3.event.pageX + "px")
         .style("top", d3.event.pageY + 20 + "px")
         .style("display", "inline-block")
-        .html(GetDateString(SelectValues[i]));    
+        .html(GetDateString(SelectValues[i]));
+       // console.log(d3.event);    
     }
 
     var dropdownbtn =  dropdown.append("svg")
         .attr("width",24)
         .attr("height",24)
         .attr("viewBox","0 0 54 54")
-        .attr("x",(width-margin))
-        .attr("y",5)
+        /*.attr("x",(width-margin))
+        .attr("y",5)*/
+        .attr("style","position: absolute; top: 5px; left:"+(width-margin)+"px;")
+        .attr("hidden",waterfallHideControl ? waterfallHideControl : null)
         .on("click",dropDownClick)
     ;
 
@@ -602,9 +625,7 @@ function Waterfall(element, props) {
     function dropDownClick() {
         dropdownContainer.classed("visible", !dropdownContainer.classed("visible"));
         dropdownContainer.classed("hide", !dropdownContainer.classed("hide"));
-    }
-;
-
+    };
 }
 
 }

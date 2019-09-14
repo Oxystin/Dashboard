@@ -11,8 +11,16 @@ export default {
       expanded: true,
       controlSetRows: [
         ['number_format'],
+        ['date_time_format'],
+        ['waterfall_label_rotate', 'waterfall_time_shift'],
+        ['waterfall_hide_control'],
         ['waterfall_color_total','waterfall_color_positive','waterfall_color_negative'],
       ],
     },
   ],
+  controlOverrides: {
+    date_time_format: {
+      default: '%b %y',
+    },
+  },
 };
