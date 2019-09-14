@@ -5,7 +5,15 @@ import { D3_TIME_FORMAT_OPTIONS } from '../controls';
 export default {
   requiresTime: true,
   controlPanelSections: [
-    NVD3TimeSeries[0],
+    {
+      label: t('Query'),
+      expanded: true,
+      controlSetRows: [
+        ['metrics'],
+        ['groupby'],
+        ['adhoc_filters'],
+      ],
+    },
     {
       label: t('Chart Options'),
       expanded: true,
