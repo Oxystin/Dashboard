@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import configureStore from 'redux-mock-store';
 import { shallow } from 'enzyme';
 import DatasourceModal from '../../../../src/datasource/DatasourceModal';
+import ChangeDatasourceModal from '../../../../src/datasource/ChangeDatasourceModal';
 import DatasourceControl from '../../../../src/explore/components/controls/DatasourceControl';
 
 const defaultProps = {
@@ -34,5 +35,10 @@ describe('DatasourceControl', () => {
   it('renders a Modal', () => {
     const wrapper = setup();
     expect(wrapper.find(DatasourceModal)).toHaveLength(1);
+  });
+
+  it('renders a ChangeDatasourceModal', () => {
+    const wrapper = setup();
+    expect(wrapper.find(ChangeDatasourceModal)).toHaveLength(1);
   });
 });
