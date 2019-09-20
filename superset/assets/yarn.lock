@@ -10412,6 +10412,11 @@ react@^16.4.1:
     prop-types "^15.6.2"
     schedule "^0.5.0"
 
+reactable-arc@0.14.42:
+  version "0.14.42"
+  resolved "https://registry.yarnpkg.com/reactable-arc/-/reactable-arc-0.14.42.tgz#a7864e331fe3b80d9d6237392d5275a17e79bb1e"
+  integrity sha512-dYWTX+JdknG/DgQlqbjf4ZIJj2z6blEfl7gqTNsLD66gcM+YrgRsTbl4S0E71/iPzfgGujxyk3TLilbozx9c9Q==
+
 reactable@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/reactable/-/reactable-1.0.2.tgz#67a579fee3af68b991b5f04df921a4a40ece0b72"
